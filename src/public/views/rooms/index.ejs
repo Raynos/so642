@@ -15,18 +15,20 @@
 </div>
 
 <h2> imagine that here lie room cards </h2>
+<div id="roomsContainer">
 <% for (var room in rooms) { %>
   <div>
     <a href="<%=rooms[room].roomLink%>"> <%= rooms[room].name %> </a>
   </div>
 <% } %>
+</div>
 
 <script>
   /**
    * this way pagination is consistent across all the pages. Call it as needed.
    */
-  (function _runIt($,currentItem,totalItems){
-    $(function _notAnon(){
+  (function ($,currentItem,totalItems){
+    $(function (){
       paginate($,currentItem,totalItems);
     })
   })(window.jQuery,1,10);
@@ -52,6 +54,31 @@
   })(window.jQuery,'.roomspan');
   <% } %>
   
+  $(function() {
+    var button = $("#addRoom");
+    button.click(function() {
+      $.ajax({
+        type: "POST",
+        url: "/rooms",
+        data: {
+          "name": "Test name"
+        },
+        success: function (data, status, xhr) {
+          console.log(data);
+          renderRoom(data);
+        }
+      });      
+    });
+  });
+
+  function renderRoom(data) {
+    var div = $("<div>");
+    var a = $("<a>");
+    a[0].href = data.roomLink;
+    a.text(data.name);
+    div.append(a)
+    $("#roomsContainer").prepend(div);
+  }
   
   
 </script>
