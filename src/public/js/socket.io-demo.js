@@ -83,7 +83,7 @@ window.onload = function() {
 	});
 
 	users.on("provide:user", function(user) {
-		if (!userArray[array.id]) {
+		if (!userArray[user.id]) {
 			userArray[user.id] = user;	
 			renderUserImage(user);
 		}
