@@ -1,13 +1,26 @@
 window.onload = function() {
 	var messages = io.connect('/messages');
 
-	messages.on("newMessage", function(data) {
-		var span = document.createElement("div");
+	function createDiv(data) {
+		var div = document.createElement("div");
+		div.dataset.messageId = data.messageId;
 
-		span.textContent = data.userId + " : " + data.text
-		main.insertBefore(span, input);
+		div.textContent = data.userId + " : " + data.text
+		main.insertBefore(div, input);
+	}
+
+	messages.on("newMessage", function(data) {
+		createDiv(data);
 	});
 
+	messages.on("provide:recentMessages", function(data) {
+		console.log(data.messages);
+		data.messages.forEach(createDiv);
+	});
+
+	messages.on("spamError", function() {
+		alert("spammer");
+	});
 
 
 	var main = document.getElementById("main");
