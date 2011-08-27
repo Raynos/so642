@@ -69,6 +69,8 @@ footer,
   font-family: 'Aldrich', sans-serif;
   font-size: 18pt;
   padding-left: 10px;
+  text-decoration: none;
+  cursor: detail;
 }
 #searchblock {
   width: 200px;
