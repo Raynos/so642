@@ -1,9 +1,11 @@
 var util = require("util"),
 	UserModel = require("./users"),
-	RoomModel = require("./rooms");
+	RoomModel = require("./rooms"),
+	MessageModel = require("./messages");
 	
 var userModel = new UserModel();
 var roomModel = new RoomModel();
+var messageModel = new MessageModel();
 
 /*------------------------------------------------------------------------------
   Create new user in Couch and Redis
@@ -48,7 +50,7 @@ var roomModel = new RoomModel();
 	}
 );*/
 
-userModel.getRange(0, -1, function(err, res) {
+/*userModel.getRange(0, -1, function(err, res) {
 	if(err) {
 		util.log(err);
 	} else {
@@ -70,13 +72,13 @@ userModel.getUserByEmail("johny1@bravo.com", function(err, res) {
 	} else {
 		util.log("user: " + JSON.stringify(res));
 	}
-});
+});*/
 
 /*------------------------------------------------------------------------------
   Create new room in Redis
 ------------------------------------------------------------------------------*/
 
-var userID = 1;
+var userID = 3;
 
 // create new room - in callback we separately assign user as owner, current,
 // read and write access. In their callbacks we get these informations back 
@@ -182,7 +184,7 @@ var userID = 1;
 	}
 );*/
 
-roomModel.getRange(0, -1, function(err, res) {
+/*roomModel.getRange(0, -1, function(err, res) {
 	if(err) {
 		util.log(err);
 	} else {
@@ -195,5 +197,39 @@ roomModel.getRange(0, -1, function(err, res) {
 		});
 	
 		util.log("rooms range: " + res);
+	}
+});*/
+
+
+/*------------------------------------------------------------------------------
+  Inser some messages to CouchDB
+------------------------------------------------------------------------------*/
+/*for(var i = 0, len = 5; i < len; i++) {
+	messageModel.create(
+		{
+			owner_id: 3,
+			text: "test message number " + i,
+			room: 2,
+		},
+		function(err, messageID) {
+			if(err) {
+				util.log(err);
+			} else {
+				util.log("message added " + messageID);
+			}
+		}
+	);
+}*/
+
+/*------------------------------------------------------------------------------
+  Get latest messages
+------------------------------------------------------------------------------*/
+messageModel.getLatestMessages(2, 3, function(err, res) {
+	if(err) {
+		util.log(err);
+	} else {
+		res.forEach(function(row) {
+			util.log(JSON.stringify(row));
+		});
 	}
 });
