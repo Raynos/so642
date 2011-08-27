@@ -53,7 +53,7 @@ function createGoogle() {
 
       .fetchOAuthUser( function (accessToken) {
         var promise = this.Promise();
-        rest.get(this.apiHost() + '/contacts/default/full'w, {
+        rest.get(this.apiHost() + '/contacts/default/full', {
           query: { oauth_token: accessToken, alt: 'json' }
         }).on('success', function (data, res) {
           var oauthUser = data.feed.author;
