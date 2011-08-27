@@ -1,7 +1,8 @@
 module.exports = function _route(app, model, io) {
 	var id = 0,
 		messageArray = {},
-		roomArray = {};
+		roomArray = {},
+		userArray = {};
 
 	roomArray[0] = {
 		users: {}	
@@ -64,6 +65,7 @@ module.exports = function _route(app, model, io) {
 	users.on("connection", function(socket) {
 		
 		var user = socket.handshake.session.auth.github.user;
+		userArray[user.id] = user;
 
 		socket.on("joinRoom", function(data) {
 			roomArray[data.room].users[user.id] = user;
@@ -73,6 +75,12 @@ module.exports = function _route(app, model, io) {
 				userId: user.id,
 				userData: user
 			})
+		});
+
+		socket.on("request:user", function(userId, cb) {
+			
+			socket.emit("provide:user", userArray[userId]);
+			cb(userArray[userId]);
 		});
 
 	});

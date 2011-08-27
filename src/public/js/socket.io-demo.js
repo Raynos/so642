@@ -4,9 +4,7 @@ window.onload = function() {
 
 	var userArray = {};
 
-	function createDiv(data) {
-		var user = userArray[data.userId];
-
+	function renderUserMessage(user, data) {
 		var div = document.createElement("div");
 		div.dataset.messageId = data.messageId;
 
@@ -21,6 +19,26 @@ window.onload = function() {
 		div.appendChild(span);
 
 		main.insertBefore(div, input);
+	}
+
+	function renderUserImage(user) {
+		var img = document.createElement("img");
+
+		img.src = "http://gravatar.com/avatar/" + user.gravatar_id;
+
+		main.appendChild(img);
+	}
+
+	function createDiv(data) {
+		var user = userArray[data.userId];
+
+		if (user) {
+			renderUserMessage(user, data);
+		} else {
+			users.emit("request:user", data.userId, function(user) {
+				renderUserMessage(user, data);
+			});
+		}
 	}
 
 	messages.on("newMessage", function(data) {
@@ -49,11 +67,26 @@ window.onload = function() {
 
 	var input = document.createElement("input");
 
+	var h2 = document.createElement("h2");
+
+	h2.textContent = "users who logged in : ";
+
 	main.appendChild(input);
 	main.appendChild(msg);
+	main.appendChild(h2)
 
 	users.on("userJoined", function(user) {
-		userArray[user.userId] = user.userData;
+		if (!userArray[user.userId]) {
+			userArray[user.userId] = user.userData;	
+			renderUserImage(user.userData);
+		}
+	});
+
+	users.on("provide:user", function(user) {
+		if (!userArray[array.id]) {
+			userArray[user.id] = user;	
+			renderUserImage(user);
+		}
 	});
 
 	users.emit("joinRoom", {
