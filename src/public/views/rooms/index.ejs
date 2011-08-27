@@ -17,7 +17,7 @@
 <h2> imagine that here lie room cards </h2>
 <% for (var room in rooms) { %>
   <div>
-    <%= rooms[room].name %>
+    <a href="<%=rooms[room].roomLink%>"> <%= rooms[room].name %> </a>
   </div>
 <% } %>
 
@@ -33,16 +33,23 @@
 
   <% if (user) { %>
   (function($,roomspan){
-    var room = $(roomspan)
-    room.append( $('<span>').addClass('button').attr('id','addRoom').text('add room') )
-    room.append( $('<span>').addClass('button').attr('id','showClosed').text('show closed rooms') )
-  })(window.jQuery,'#roomspan');
+    $(function() {
+      var room = $(roomspan)
+      room.append( $('<span>').addClass('button').attr('id','addRoom').text('add room') );
+      room.append( $('<span>').addClass('button').attr('id','showClosed').text('show closed rooms') );
+    });
+    
+  })(window.jQuery,'.roomspan');
+
+  <% } %>
   
   <% if (user && user.isAdmin) { %>
   (function($,roomspan){
-    var room = $(roomspan)
-    room.append( $('<span>').addClass('button').attr('id','showDeleted').text('show deleted rooms') )
-  })(window.jQuery,'#roomspan');
+    $(function() {
+      var room = $(roomspan)
+      room.append( $('<span>').addClass('button').attr('id','showDeleted').text('show deleted rooms') );
+    });
+  })(window.jQuery,'.roomspan');
   <% } %>
   
   

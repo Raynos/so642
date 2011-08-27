@@ -14,6 +14,8 @@ module.exports = function _route(app, model, io) {
             data.forEach(function(val) {
                 var id = val.split(":")[1]
                 Room.get(val.split(":")[1], function(err, room) {
+                    room.id = id;
+                    room.roomLink = "/rooms/" + room.id + "/" + room.name;
                     cb(room);
                 });
             });
@@ -33,7 +35,11 @@ module.exports = function _route(app, model, io) {
     });
 
     app.get("/rooms/:roomId/:title?", function(req, res) {
-        res.render("rooms/view");
+        Room.get(req.params.roomId, function(err, room) {
+            res.render("rooms/view", {
+                room: room
+            });
+        });
     });
 
     app.post("/rooms", function(req, res) {     
