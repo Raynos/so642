@@ -25,7 +25,7 @@ var UserModel = module.exports = function UserModel() {
   (private) _createCouchUser
 
   + obj
-  + callback
+  + callback - err or native response
   - void
   a
   Creates new user in CouchDB.
@@ -34,6 +34,7 @@ UserModel.prototype._createCouchUser = function(userID, obj, callback) {
 	this._couchClient.save(
 		userID.toString(), 
 		{
+			type: "user",
 			name: obj.name,
 			email: obj.email,
 			password_hash: obj.password_hash,
@@ -54,15 +55,16 @@ UserModel.prototype._createCouchUser = function(userID, obj, callback) {
   (private) _createRedisUser
 
   + obj
-  + callback
+  + callback - err or native response
   - void
   
   Creates new user in Redis.
 ------------------------------------------------------------------------------*/	
 UserModel.prototype._createRedisUser = function(userID, obj, callback) {
-	var date = new Date();
+	var self = this,
+		date = new Date();
 
-	this._redisClient.hmset("user:" + userID, 
+	self._redisClient.hmset("user:" + userID, 
 		{
 			name: obj.name,
 			email: obj.email,
@@ -81,7 +83,17 @@ UserModel.prototype._createRedisUser = function(userID, obj, callback) {
 			can_read: obj.can_read
 		},
 		function(err, res) {
-			callback(err, res);
+			if(err) {
+				callback(err, undefined);
+			} else {
+				self._redisClient.lpush("users", "user:" + userID, function(err2, res2) {
+					if(err2) {
+						callback(err2, undefined);
+					} else {
+						callback(undefined, res2);
+					}
+				});
+			}
 		}
 	);
 };
@@ -90,7 +102,7 @@ UserModel.prototype._createRedisUser = function(userID, obj, callback) {
   (public) create
 
   + obj
-  + callback
+  + callback - err or usedID
   - void
   
   Creates new user.
@@ -98,23 +110,127 @@ UserModel.prototype._createRedisUser = function(userID, obj, callback) {
 UserModel.prototype.create = function(obj, callback) {
 	var self = this;
 	
-	self._redisClient.hincrby("increment", "users", 1, function(err, res) {
+	self._redisClient.hincrby("increment", "users", 1, function(err, userID) {
 		if(err) {
 			callback(err, undefined);
 		} else {
-			self._createCouchUser(res, obj, function(err2, res2) {
+			self._createCouchUser(userID, obj, function(err2, res2) {
 				if(err2) {
 					callback(err2, undefined);
 				} else {
-					self._createRedisUser(res, obj, function(err3, res3) {
+					self._createRedisUser(userID, obj, function(err3, res3) {
 						if(err3) {
 							callback(err3, undefined);
 						} else {
-							callback(undefined, res3);
+							callback(undefined, userID);
 						}
 					});
 				}
 			});
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getC
+
+  + userID
+  + callback - err or user doc
+  - void
+  
+  Get specific user from CouchDB.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getC = function(userID, callback) {
+	this._couchClient.get(userID, function(err, doc) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, doc);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getR
+
+  + userID
+  + callback - err or user object
+  - void
+  
+  Get specific user from Redis.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getR = function(userID, callback) {
+	this._redisClient.hgetall("user:" + userID, function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getUserByEmail
+
+  + userEmail
+  + callback - err or user doc
+  - void
+  
+  Get specific user from Redis.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getUserByEmail = function(userEmail, callback) {
+	this._couchClient.view(
+		"views/userByEmail", 
+		//{startKey: "[\"conversation:1234\"]", endKey: "[\"conversation:1234\", {}]"}, 
+		//{startkey: ["conversation:5486", {}], endkey: ["conversation:5486"],descending: "true", limit: 2}, 
+		{key: userEmail},
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
+			/*res.forEach(function(row) {
+				util.log(row.conversationID + " - " + row.timestamp);
+			});*/
+		}
+	);
+};
+
+/*------------------------------------------------------------------------------
+  (public) getRange
+
+  + startIndex
+  + endIndex
+  + callback - err or array of user IDs
+  - void
+  
+  Get specific range of users from Redis.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getRange = function(startIndex, endIndex, callback) {
+	this._redisClient.lrange("users", startIndex, endIndex, function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getTotalUsersCount
+
+  + callback - err or total number of users
+  - void
+  
+  Get total number of users in Redis.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getTotalUsersCount = function(callback) {
+	this._redisClient.llen("users", function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
 		}
 	});
 };
