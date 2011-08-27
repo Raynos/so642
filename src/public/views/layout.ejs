@@ -91,7 +91,7 @@
         pages = 2, /* allows us to change the number of the pagination later */
         cP = 0, /* currentPage */
         tP = 0, /* totalPages */
-        pI = 15, /* pagedItems -- the total items shown on page at one time */
+        pI = 16, /* pagedItems -- the total items shown on page at one time */
         ctr = 0; /* loop counter */
     pager.empty()
     
@@ -108,7 +108,7 @@
       pager.append( $('<span>').addClass('pagenumber prev').text('prev') )
     }
     /* if there were at least two previous pages, put a 1 and a space */
-    if (cP > pages){
+    if (cP > (pages + 1)){
       pager.append( $('<span>').addClass('pagenumber').text('1') )
       pager.append( $('<span>').addClass('pagenumber space').text('...') )
     }
@@ -116,8 +116,8 @@
     for (ctr = -pages; ctr <= pages; ctr++){
       class = 'pagenumber'
       if (!ctr) { class += ' this' } /* aren't I a clever shit. If we're on counter 0 then that's this page */
-      if ((cP + ctr) > 0){
-        pager.append( $('<span>').addClass(class).text(ctr) )
+      if ((cP + ctr) > 0 && (cP + ctr) <= tP){
+        pager.append( $('<span>').addClass(class).text((cP + ctr)) )
       }
     }
     /* if there are at least two more pages, put a space and the last number */
@@ -125,7 +125,7 @@
       pager.append( $('<span>').addClass('pagenumber space').text('...') )
       pager.append( $('<span>').addClass('pagenumber').text(tP) )
     }
-    if (cP < (tP - 1)){
+    if (cP < tP){
       pager.append( $('<span>').addClass('pagenumber last').text('last') )
     }
   }
