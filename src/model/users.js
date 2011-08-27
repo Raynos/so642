@@ -25,7 +25,7 @@ var UserModel = module.exports = function UserModel() {
   (private) _createCouchUser
 
   + obj
-  + callback
+  + callback - err or native response
   - void
   a
   Creates new user in CouchDB.
@@ -54,15 +54,16 @@ UserModel.prototype._createCouchUser = function(userID, obj, callback) {
   (private) _createRedisUser
 
   + obj
-  + callback
+  + callback - err or native response
   - void
   
   Creates new user in Redis.
 ------------------------------------------------------------------------------*/	
 UserModel.prototype._createRedisUser = function(userID, obj, callback) {
-	var date = new Date();
+	var self = this,
+		date = new Date();
 
-	this._redisClient.hmset("user:" + userID, 
+	self._redisClient.hmset("user:" + userID, 
 		{
 			name: obj.name,
 			email: obj.email,
@@ -81,7 +82,17 @@ UserModel.prototype._createRedisUser = function(userID, obj, callback) {
 			can_read: obj.can_read
 		},
 		function(err, res) {
-			callback(err, res);
+			if(err) {
+				callback(err, undefined);
+			} else {
+				self._redisClient.lpush("users", "user:" + userID, function(err2, res2) {
+					if(err2) {
+						callback(err2, undefined);
+					} else {
+						callback(undefined, res2);
+					}
+				});
+			}
 		}
 	);
 };
@@ -90,7 +101,7 @@ UserModel.prototype._createRedisUser = function(userID, obj, callback) {
   (public) create
 
   + obj
-  + callback
+  + callback - err or usedID
   - void
   
   Creates new user.
@@ -98,23 +109,99 @@ UserModel.prototype._createRedisUser = function(userID, obj, callback) {
 UserModel.prototype.create = function(obj, callback) {
 	var self = this;
 	
-	self._redisClient.hincrby("increment", "users", 1, function(err, res) {
+	self._redisClient.hincrby("increment", "users", 1, function(err, userID) {
 		if(err) {
 			callback(err, undefined);
 		} else {
-			self._createCouchUser(res, obj, function(err2, res2) {
+			self._createCouchUser(userID, obj, function(err2, res2) {
 				if(err2) {
 					callback(err2, undefined);
 				} else {
-					self._createRedisUser(res, obj, function(err3, res3) {
+					self._createRedisUser(userID, obj, function(err3, res3) {
 						if(err3) {
 							callback(err3, undefined);
 						} else {
-							callback(undefined, res3);
+							callback(undefined, userID);
 						}
 					});
 				}
 			});
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getC
+
+  + userID
+  + callback - err or user doc
+  - void
+  
+  Get specific user from CouchDB.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getC = function(userID, callback) {
+	this._couchClient.get(userID, function(err, doc) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, doc);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getR
+
+  + userID
+  + callback - err or user object
+  - void
+  
+  Get specific user from Redis.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getR = function(userID, callback) {
+	this._redisClient.hgetall("user:" + userID, function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getRange
+
+  + startIndex
+  + endIndex
+  + callback - err or array of users IDs
+  - void
+  
+  Get specific range of users from Redis.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getRange = function(startIndex, endIndex, callback) {
+	this._redisClient.lrange("users", startIndex, endIndex, function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getTotalUsersCount
+
+  + callback - err or total number of users
+  - void
+  
+  Get total number of users in Redis.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getTotalUsersCount = function(callback) {
+	this._redisClient.llen("users", function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
 		}
 	});
 };
