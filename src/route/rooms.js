@@ -20,4 +20,8 @@ module.exports = function _route(app, model, io) {
 		res.render("rooms/view");
 	});
 
+	app.post("/rooms", function(req, res) {		
+		res.redirect("/rooms/0/");
+	});
+
 };
