@@ -22,102 +22,6 @@ var RoomModel = module.exports = function RoomModel() {
 };
 
 /*------------------------------------------------------------------------------
-  (public) assignWriteAccess
-
-  + userID
-  + roomsID
-  + callback
-  - void
-  
-  Assigns write access of userID for specific room.
-------------------------------------------------------------------------------*/
-RoomModel.prototype.assignWriteAccess = function(userID, roomID, callback) {
-	this._redisClient.sadd(
-		"room:" + roomID + ":write_access", 
-		"user:" + userID,
-		function(err, res) {
-			if(err) {
-				callback(err, undefined);
-			} else {
-				callback(undefined, res);
-			}
-		}
-	);
-};
-
-/*------------------------------------------------------------------------------
-  (public) assignReadAccess
-
-  + userID
-  + roomsID
-  + callback
-  - void
-  
-  Assigns read access of userID for specific room.
-------------------------------------------------------------------------------*/
-RoomModel.prototype.assignReadAccess = function(userID, roomID, callback) {
-	this._redisClient.sadd(
-		"room:" + roomID + ":read_access", 
-		"user:" + userID,
-		function(err, res) {
-			if(err) {
-				callback(err, undefined);
-			} else {
-				callback(undefined, res);
-			}
-		}
-	);
-};
-
-/*------------------------------------------------------------------------------
-  (public) assignCurrentUser
-
-  + userID
-  + roomsID
-  + callback
-  - void
-  
-  Assigns current userID to specific room as a current user.
-------------------------------------------------------------------------------*/
-RoomModel.prototype.assignCurrentUser = function(userID, roomID, callback) {
-	this._redisClient.sadd(
-		"room:" + roomID + ":current_users", 
-		"user:" + userID,
-		function(err, res) {
-			if(err) {
-				callback(err, undefined);
-			} else {
-				callback(undefined, res);
-			}
-		}
-	);
-};
-
-/*------------------------------------------------------------------------------
-  (public) _assignOwner
-
-  + userID
-  + roomsID
-  + callback
-  - void
-  
-  Assigns userID to specific room as a room owner.
-------------------------------------------------------------------------------*/
-RoomModel.prototype.assignOwner = function(userID, roomID, callback) {
-	this._redisClient.sadd(
-		"room:" + roomID + ":owners", 
-		"user:" + userID,
-		function(err, res) {
-			if(err) {
-				callback(err, undefined);
-			} else {
-				callback(undefined, res);
-			}
-		}
-	);
-};
-
-/*------------------------------------------------------------------------------
   (public) create
 
   + obj
@@ -130,13 +34,13 @@ RoomModel.prototype.create = function(userID, obj, callback) {
 	var self = this,
 		date = new Date();
 	
-	self._redisClient.hincrby("increment", "rooms", 1, function(err, res) {
+	self._redisClient.hincrby("increment", "rooms", 1, function(err, roomID) {
 		if(err) {
 			callback(err, undefined);
 		} else {
-			self._redisClient.hmset("room:" + res,
+			self._redisClient.hmset("room:" + roomID,
 				{
-					id: res,
+					id: roomID,
 					name: obj.name,
 					description: obj.description,
 					created: date.getTime(),
@@ -153,7 +57,13 @@ RoomModel.prototype.create = function(userID, obj, callback) {
 					if(err2) {
 						callback(err2, undefined);
 					} else {
-						callback(undefined, res);
+						self._redisClient.lpush("rooms", "room:" + roomID, function(err3, res3) {
+							if(err3) {
+								callback(err3, undefined);
+							} else {
+								callback(undefined, roomID);
+							}
+						});
 					}
 				}	
 			);
@@ -184,7 +94,7 @@ RoomModel.prototype.get = function(roomID, callback) {
   (public) getOwners
 
   + roomID
-  + callback
+  + callback - err or native response
   - void
   
   Get room owners from Redis.
@@ -200,10 +110,34 @@ RoomModel.prototype.getOwners = function(roomID, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) setOwner
+
+  + userID
+  + roomsID
+  + callback - err or native response
+  - void
+  
+  Assigns userID to specific room as a room owner.
+------------------------------------------------------------------------------*/
+RoomModel.prototype.setOwner = function(userID, roomID, callback) {
+	this._redisClient.sadd(
+		"room:" + roomID + ":owners", 
+		"user:" + userID,
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
+		}
+	);
+};
+
+/*------------------------------------------------------------------------------
   (public) getCurrentUsers
 
   + roomID
-  + callback
+  + callback - err or native response
   - void
   
   Get room current users from Redis.
@@ -219,10 +153,34 @@ RoomModel.prototype.getCurrentUsers = function(roomID, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) setCurrentUser
+
+  + userID
+  + roomsID
+  + callback - err or native response
+  - void
+  
+  Assigns current userID to specific room as a current user.
+------------------------------------------------------------------------------*/
+RoomModel.prototype.setCurrentUser = function(userID, roomID, callback) {
+	this._redisClient.sadd(
+		"room:" + roomID + ":current_users", 
+		"user:" + userID,
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
+		}
+	);
+};
+
+/*------------------------------------------------------------------------------
   (public) getReadAccessUsers
 
   + roomID
-  + callback
+  + callback - err or native response
   - void
   
   Get room users which have read access from Redis.
@@ -238,16 +196,102 @@ RoomModel.prototype.getReadAccessUsers = function(roomID, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) setReadAccess
+
+  + userID
+  + roomsID
+  + callback - err or native response
+  - void
+  
+  Assigns read access of userID for specific room.
+------------------------------------------------------------------------------*/
+RoomModel.prototype.setReadAccess = function(userID, roomID, callback) {
+	this._redisClient.sadd(
+		"room:" + roomID + ":read_access", 
+		"user:" + userID,
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
+		}
+	);
+};
+
+/*------------------------------------------------------------------------------
   (public) getWriteAccessUsers
 
   + roomID
-  + callback
+  + callback - err or native response
   - void
   
   Get room users which have read access from Redis.
 ------------------------------------------------------------------------------*/	
 RoomModel.prototype.getWriteAccessUsers = function(roomID, callback) {
 	this._redisClient.smembers("room:" + roomID + ":write_access", function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) setWriteAccess
+
+  + userID
+  + roomsID
+  + callback - err or native response
+  - void
+  
+  Assigns write access of userID for specific room.
+------------------------------------------------------------------------------*/
+RoomModel.prototype.setWriteAccess = function(userID, roomID, callback) {
+	this._redisClient.sadd(
+		"room:" + roomID + ":write_access", 
+		"user:" + userID,
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
+		}
+	);
+};
+
+/*------------------------------------------------------------------------------
+  (public) getRange
+
+  + startIndex
+  + endIndex
+  + callback - err or array of rooms IDs
+  - void
+  
+  Get specific range of rooms from Redis.
+------------------------------------------------------------------------------*/	
+RoomModel.prototype.getRange = function(startIndex, endIndex, callback) {
+	this._redisClient.lrange("rooms", startIndex, endIndex, function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getTotalRoomsCount
+
+  + callback - err or total number of rooms
+  - void
+  
+  Get total number of rooms in Redis.
+------------------------------------------------------------------------------*/	
+RoomModel.prototype.getTotalRoomsCount = function(callback) {
+	this._redisClient.llen("rooms", function(err, res) {
 		if(err) {
 			callback(err, undefined);
 		} else {
