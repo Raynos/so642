@@ -42,8 +42,16 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.post("/rooms", function(req, res) {     
-        res.redirect("/rooms/0/");
+    app.post("/rooms", function(req, res) { 
+        //console.log(req.user.id);
+        Room.create(req.user.id, req.body, function (err, roomId) {
+            Room.get(roomId, function(err, room) {
+                room.id = roomId;
+                room.roomLink = '/rooms/' + room.id + "/" + room.name;
+                res.send(room); 
+            });
+        });
+        //res.redirect("/rooms/0/");
     });
 
     app.put("/rooms/:roomId/:title?", function(req, res) {
