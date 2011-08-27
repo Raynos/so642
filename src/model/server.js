@@ -48,6 +48,22 @@ userModel.create(
 	}
 );
 
+userModel.getRange(0, -1, function(err, res) {
+	if(err) {
+		util.log(err);
+	} else {
+		userModel.getTotalUsersCount(function(err2, count) {
+			if(err2) {
+				util.log(err2);
+			} else {
+				util.log("total users count: " + count);
+			}
+		});
+	
+		util.log("users range: " + res);
+	}
+});
+
 /*------------------------------------------------------------------------------
   Create new room in Redis
 ------------------------------------------------------------------------------*/
@@ -55,7 +71,8 @@ userModel.create(
 var userID = 1;
 
 // create new room - in callback we separately assign user as owner, current,
-// read and write access. Then we get these informations back through get methods.
+// read and write access. In their callbacks we get these informations back 
+// through get methods.
 roomModel.create(
 	userID,
 	{
@@ -69,8 +86,11 @@ roomModel.create(
 		if(err) {
 			util.log(err);
 		} else {
+			// returned by create method
+			util.log("userID: " + roomID);
+		
 			// separately assign user as room owner
-			roomModel.assignOwner(userID, roomID, function(err2, res2) {
+			roomModel.setOwner(userID, roomID, function(err2, res2) {
 				if(err2) {
 					util.log(err2);
 				} else {
@@ -88,7 +108,7 @@ roomModel.create(
 			});
 			
 			// separately assign user as current
-			roomModel.assignCurrentUser(userID, roomID, function(err3, res3) {
+			roomModel.setCurrentUser(userID, roomID, function(err3, res3) {
 				if(err3) {
 					util.log(err3);
 				} else {
@@ -106,7 +126,7 @@ roomModel.create(
 			});
 			
 			// separately assign user read access
-			roomModel.assignReadAccess(userID, roomID, function(err4, res4) {
+			roomModel.setReadAccess(userID, roomID, function(err4, res4) {
 				if(err4) {
 					util.log(err4);
 				} else {
@@ -124,7 +144,7 @@ roomModel.create(
 			});
 			
 			// separately assign user write access
-			roomModel.assignWriteAccess(userID, roomID, function(err5, res5) {
+			roomModel.setWriteAccess(userID, roomID, function(err5, res5) {
 				if(err5) {
 					util.log(err5);
 				} else {
@@ -153,3 +173,19 @@ roomModel.create(
 		}
 	}
 );
+
+roomModel.getRange(0, -1, function(err, res) {
+	if(err) {
+		util.log(err);
+	} else {
+		roomModel.getTotalRoomsCount(function(err2, count) {
+			if(err2) {
+				util.log(err2);
+			} else {
+				util.log("total rooms count: " + count);
+			}
+		});
+	
+		util.log("rooms range: " + res);
+	}
+});
