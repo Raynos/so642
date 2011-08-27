@@ -27,18 +27,28 @@
     </div>
     <!-- this is where we type in at -->
     <div id="chatter" class="background">
-      <div class="left">
+      <table width="100%">
+      <tr>
+      <td width="110px">
         <img src="img/gravatar_logo.png" alt="the gravatar logo, for placeholder" title="this is where the person's gravatar goes" />
+        </td>
+        <td>
         <textarea id="input"></textarea>
-      </div>
+        </td>
+      <td width="200">
       <span id="sayit-button" class="button">speak</span>
-      <span id="codify-button" class="button" title="Toggle fixed-width formatting (ctrl+k)">fixed width font</span>
       <span id="cancel-editing-button" class="button">cancel</span>
+      <span id="codify-button" class="button" title="Toggle fixed-width formatting (ctrl+k)">fixed width font</span>
+      <span id="chat-format-help" class="button" title="How do I format my code?">format?</span>
+      </td>
+      </table>
     </div>
   </div>
   <!-- this is the other panel side -->
   <div id="roominfopanel">
-    
+    <div class="sidebarpanel">
+      
+    </div>
   </div>  
 </div> <!--! end of #container -->
 
@@ -50,49 +60,61 @@
 <script src="js/script.js"></script>
 <!-- end scripts-->
 <script>
-  /**
-   * this is for the search box
-   * wrapped in a closure for sanity
-   */
-  (function($,id){
-    $(function(){
-      $(id)
-        .click( searchClick )
-        .blur( searchBlur )
-        .keypress( searchKeypress )
-        .keyup( searchKeyup )
-      
-      function searchClick(event){
-        var that = $(this)
-        if (that && that.hasClass('untouched') && that.val() === 'Search' ){
-          that.removeClass('untouched').val('')
-        }
+/**
+ * this is for the search box
+ */
+(function($,id){
+    $(id)
+      .click( searchClick )
+      .blur( searchBlur )
+      .keypress( searchKeypress )
+      .keyup( searchKeyup )
+    
+    function searchClick(event){
+      var that = $(this)
+      if (that && that.hasClass('untouched') && that.val() === 'Search' ){
+        that.removeClass('untouched').val('')
       }
-      
-      function searchBlur(event){
-        var that = $(this)
-        if (that && !that.hasClass('untouched') && ( that.val() === 'Search' || that.val() === '' )){
-          that.addClass('untouched').val('Search')
-        }
+    }
+    
+    function searchBlur(event){
+      var that = $(this)
+      if (that && !that.hasClass('untouched') && ( that.val() === 'Search' || that.val() === '' )){
+        that.addClass('untouched').val('Search')
       }
-      
-      function searchKeypress(event){
-        var that = $(this)
-        /* if they press enter */
-        if( that && event.which === 13 ){
-          /* do something here to search for the value and redirect */
-        }
+    }
+    
+    function searchKeypress(event){
+      var that = $(this)
+      /* if they press enter */
+      if( that && event.which === 13 ){
+        /* do something here to search for the value and redirect */
       }
-      
-      function searchKeyup(event){
-        var that = $(this)
-        /* if they press esc */
-        if( that && event.which === 27 ){
-          that.val('')
-        }
+    }
+    
+    function searchKeyup(event){
+      var that = $(this)
+      /* if they press esc */
+      if( that && event.which === 27 ){
+        that.val('')
       }
-    })
+    }
   })(window.jQuery,'#search');
+
+/** 
+ * assign the function for the format help box
+ */
+(function($,id){
+  $(id).click( chatFormatHelpClick )
+  
+  function chatFormatHelpClick(event){
+    window.open('/faq#format','_formatWindow')
+  }
+})(window.jQuery,'#chat-format-help');
+
+
+
+
 </script>
 
 <script>
