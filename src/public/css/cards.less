@@ -1,0 +1,101 @@
+
+@cardborder: 3px;
+
+    .cards.rooms{
+      padding-top: 20px;
+      font-family: 'Aldrich', sans-serif;
+      .cardshadow{
+        width: 227px;
+        position: relative;
+        background-color: #aaa;
+        margin: 4px 6px 4px 4px;
+        float:left;
+        -webkit-border-radius: @cardborder; 
+        -moz-border-radius: @cardborder; 
+        border-radius: @cardborder;
+        .cardouter {
+          width: 215px;
+          position: relative;
+          display: inline-block;
+          border: thin solid #ccc;
+          -webkit-border-radius: @cardborder; 
+          -moz-border-radius: @cardborder; 
+          border-radius: @cardborder;
+          padding: 4px;
+          top: -2px;
+          left: -2px;
+          background-color: white;
+          .cardinner {
+            width: 215px;
+            height: 140px;
+            min-height: 140px;
+            max-height: 140px;
+            
+            .textinner {
+              width: 165px;
+              float: left;
+              .starbox {
+                float:right;
+                z-index: 5;
+                .join {
+                  text-decoration: none;
+                  cursor: pointer;
+                }
+                .star {
+                  /* here we need to put in a hollow star icon */
+                }
+                .starred {
+                  /* here we need to put in a filled star icon */
+                }
+              }
+              .cardname {
+                font-weight: bold;
+              }
+              .cardtext {
+                font-size: 90%;
+                display: inline-block;
+                height: 60px;
+                max-height: 60px;
+                overflow-y: hidden;
+              }
+              .histogram {
+                width: 165px;
+                height: 60px;
+                min-height: 60px;
+                max-height: 60px;
+                background-color: #e0e0e0;
+                position: absolute;
+                bottom: 12px;
+              }
+              .bottomline {
+                width: 215px;
+                position: absolute;
+                bottom: @cardborder;
+                left: @cardborder;
+                font-size: 80%;
+                text-decoration: none;
+                cursor: pointer;
+                .transcript {
+                  float:left;
+                }
+                .info {}
+              }
+            }
+            .textnumbers {
+              width: 48px;
+              height: 130px;
+              position: absolute;
+              right: @cardborder;
+              top: @cardborder;
+              overflow: hidden;
+              float: right;
+              p {
+                font-size: 90%;
+                text-align: right;
+                margin: 7px 0px;
+              }
+            }
+          }
+        }
+      }
+    }
