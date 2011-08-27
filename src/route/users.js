@@ -24,7 +24,6 @@ module.exports = function _route(app, model, io) {
 
 	app.get("/users/:userId/:title?", function(req, res) {
 		User.getR(req.params.userId, function(err, user) {
-			console.log(arguments);
 			res.render("users/view", {
 				person: user
 			});	
