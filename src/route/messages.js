@@ -1,87 +1,167 @@
-module.exports = function _route(app, model, io) {
-    var id = 0,
-        messageArray = {},
-        roomArray = {},
-        userArray = {};
+var roomList = {};
 
-    roomArray[0] = {
-        users: {}   
-    };
-
-    function provideAll(socket) {
-        var msgs = [];
-        for (var i in messageArray) {
-            msgs.push(messageArray[i]);
+var RoomObject = {
+    addUser: function(socket, user) {
+        this._sockets[user.id] = socket;
+    },
+    removeUser: function(socket) {
+        for (var k in this._sockets) {
+            if (this._sockets[k] === socket) {
+                delete this._sockets[k];
+                break;
+            }
         }
-        socket.emit("provide:recentMessages", {
-            "messages": msgs
+    },
+    has: function(socket) {
+        for (var k in this._sockets) {
+            if (this._sockets[k] === socket) {
+                return true;
+            }
+        }
+        return false;
+    },
+    emit: function() {
+        for (var k in this._sockets) {
+            var s = this._sockets[k];
+            s.emit.apply(s, arguments);
+        }
+    }
+};
+
+
+var User = new (require("../model/users.js"))(),
+    Room = new (require("../model/rooms.js"))(),
+    everyauth = require("everyauth"),
+    after = require("after");
+
+module.exports = function _route(app, model, io) {
+    var Message = new model();
+
+    function provideAll(socket, room, n) {
+        Message.getLatestMessages(room, n, function(err, rows) {
+            socket.emit("provide:recentMessages", {
+                "messages": rows.map(function(v) {
+                    v.id = v._id.split(":")[1]
+                    return v; 
+                })
+            });     
         });
     }
 
-    var messages = io.of('/messages');
+    var sockets = io.sockets;
         
-    messages.on("connection", function (socket) {
+    sockets.on("connection", function (socket) {
         socket.timeout = Date.now();
 
-        var user = socket.handshake.session.auth.github.user;
+        getUser(socket, function(err, user) {
+            socket.on("sendMessage", function(data) {
+                if (socket.timeout + 500 < Date.now()) {
+                    socket.timeout = Date.now();
 
-        socket.on("sendMessage", function(data) {
-            if (socket.timeout + 500 < Date.now()) {
-                socket.timeout = Date.now();
-
-                var message = {
-                    userId: user.id,
-                    text: data.text,
-                    messageId: id++,
-                    timestamp: Date.now()
-                };
-
-                messageArray[message.messageId] = message;
-
-                messages.emit("newMessage", message);   
-            } else {
-                socket.emit("spamError")
-            }
-        });
-
-        socket.on("editMessage", function(data) {
-
-            messages.emit("messageChanged", {
-                messageId: data.messageId,
-                text: data.text
+                    Message.create({
+                        owner_id: user.id,
+                        text: data.text,
+                        room: data.room
+                    }, function(err, id) {
+                        Message.get(id, function(err, res) {
+                            var room = getRoom(res.room);
+                            room.emit("newMessage", res);
+                        });
+                    });
+                } else {
+                    socket.emit("spamError")
+                }
             });
+
+            socket.on("editMessage", function(data) {
+
+                /*messages.emit("messageChanged", {
+                    messageId: data.messageId,
+                    text: data.text
+                });*/
+            });
+
+            socket.on("request:recentMessages", function(room, n) {
+                provideAll(socket, room, n || 50);
+            }); 
+
+            socket.on("joinRoom", function(data) {
+                Room.setCurrentUser(user.id, data.room, function(err, res) {
+                    var room = getRoom(data.room);
+                    room.addUser(socket, user);
+
+                    room.emit("userJoined", {
+                        roomId: data.room,
+                        userId: user.id,
+                        userData: user
+                    });    
+                });
+
+                provideUsersInRoom(socket, data.room);
+            });
+
+            socket.on("request:user", function(userId, cb) {
+                User.getR(userId, function(err, user) {
+                    socket.emit("provide:user", user);
+                    if (cb) {
+                        cb(user);
+                    }
+                });
+            });
+
+            socket.on("request:usersInRoom", function(roomId) {
+                provideUsersInRoom(socket, roomId);
+            });    
+
+            socket.on("disconnect", function() {
+                var room;
+                for (var key in roomList) {
+                    if (roomList[key].has(socket)) {
+                        room = roomList[key];
+                        break;
+                    }
+                }
+                Room.removeCurrentUser(user.id, room.id, function(err, res) {
+                    room.removeUser(socket);
+                    room.emit("userLeft", {
+                        roomId: room.id,
+                        userId: user.id         
+                    });    
+                });
+            });
+
+            socket.emit("ready");
         });
-
-        socket.on("request:recentMessages", function() {
-            provideAll(socket);
-        });
-
-        provideAll(socket);
-
-    });
-
-    var users = io.of("/users")
-
-    users.on("connection", function(socket) {
         
-        var user = socket.handshake.session.auth.github.user;
-        userArray[user.id] = user;
-
-        socket.on("joinRoom", function(data) {
-            roomArray[data.room].users[user.id] = user;
-
-            users.emit("userJoined", {
-                roomId: data.room,
-                userId: user.id,
-                userData: user
-            })
-        });
-
-        socket.on("request:user", function(userId, cb) {
-            
-            socket.emit("provide:user", userArray[userId]);
-            cb(userArray[userId]);
-        });
-
     });
 };
+
+function getRoom(id) {
+    if (!roomList[id]) {
+        roomList[id] = Object.create(RoomObject);
+        roomList[id].id = id;
+        roomList[id]._sockets = {};
+    }
+    return roomList[id];
+}
+
+function provideUsersInRoom(socket, room) {
+    Room.getCurrentUsers(room, function(err, res) {
+        var cb = after(res.length, function() {
+            if (arguments.length > 0) {
+                socket.emit("provide:usersInRoom", arguments);
+            }
+        });
+        res.forEach(function(v) {
+            var id = v.split(":")[1];
+            User.getR(id, function(err, user) {
+                cb(user);
+            });
+        })
+    });
+}
+
+function getUser(socket, cb) {
+    var id = socket.handshake.session.auth.userId
+    everyauth.everymodule._findUserById(id, cb);
+}
