@@ -37,14 +37,12 @@
     room.append( $('<span>').addClass('button').attr('id','addRoom').text('add room') )
     room.append( $('<span>').addClass('button').attr('id','showClosed').text('show closed rooms') )
   })(window.jQuery,'#roomspan');
-
-  <% if (user.isAdmin) { %>
+  
+  <% if (user && user.isAdmin) { %>
   (function($,roomspan){
     var room = $(roomspan)
     room.append( $('<span>').addClass('button').attr('id','showDeleted').text('show deleted rooms') )
   })(window.jQuery,'#roomspan');
-  <% } %>
-
   <% } %>
   
   
