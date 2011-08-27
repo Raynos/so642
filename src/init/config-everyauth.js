@@ -82,8 +82,7 @@ module.exports = function(app) {
 
     everyauth.everymodule
         .findUserById(function(id, cb) {
-            console.log("called find user", id);
-            cb(null, {});
+            User.getR(id, cb);
         });
 
 	everyauth.github
@@ -103,7 +102,9 @@ module.exports = function(app) {
                         });
                     });  
                 } else {
-                    p.fulfill(user[0]);
+                    var obj = user[0].value;
+                    obj.id = user[0].id
+                    p.fulfill(obj);
                 }
             });
             return p;
@@ -129,7 +130,9 @@ module.exports = function(app) {
                         });
                     });  
                 } else {
-                    p.fulfill(user[0]);
+                    var obj = user[0].value;
+                    obj.id = user[0].id
+                    p.fulfill(obj);
                 }
             });
             return p;
