@@ -16,9 +16,10 @@ module.exports = function(app, sessionStore) {
 			data.sessionId = data.cookie['express.sid'];
 
 			sessionStore.get(data.sessionId, function(err, session) {
+				
 				if (err) {
 					return accept(err.message, false);
-				} else if (!session.auth) {
+				} else if (!(session && session.auth)) {
 					return accept("not authorized", false)
 				}
 				data.session = session;
