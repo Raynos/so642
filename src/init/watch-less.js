@@ -11,5 +11,7 @@ module.exports = function() {
 			var less = exec(cmd);
 		}
 	});
+	var cmd = "lessc " + dir + "/site.less > " + dir + "/site.css";
+	var less = exec(cmd);
 }
 	
