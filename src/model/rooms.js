@@ -178,6 +178,7 @@ RoomModel.prototype.setCurrentUser = function(userID, roomID, callback) {
 };
 
 /*------------------------------------------------------------------------------
+
   (public) unsetCurrentUser
 
   + userID

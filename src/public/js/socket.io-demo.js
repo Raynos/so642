@@ -1,16 +1,22 @@
 window.onload = function() {
-    var messages = io.connect('/messages'),
-        users = io.connect("/users");
+    var socket = io.connect();
 
     var userArray = {};
 
+    function addUser(user) {
+        if (!userArray[user.id]) {
+            userArray[user.id] = user; 
+            renderUserImage(user);       
+        }
+    };
+
     function renderUserMessage(user, data) {
         var div = document.createElement("div");
-        div.dataset.messageId = data.messageId;
+        div.dataset.messageId = data.id;
 
         var img = document.createElement("img");
 
-        img.src = "http://gravatar.com/avatar/" + user.gravatar_id;
+        img.src = "http://gravatar.com/avatar/" + user.gravatar_hash;
 
         var span = document.createElement("span");
         span.textContent = user.name + " : " + data.text;
@@ -24,73 +30,81 @@ window.onload = function() {
     function renderUserImage(user) {
         var img = document.createElement("img");
 
-        img.src = "http://gravatar.com/avatar/" + user.gravatar_id;
+        img.src = "http://gravatar.com/avatar/" + user.gravatar_hash;
 
         main.appendChild(img);
     }
 
     function createDiv(data) {
-        var user = userArray[data.userId];
+        var user = userArray[data.owner_id];
 
         if (user) {
             renderUserMessage(user, data);
         } else {
-            users.emit("request:user", data.userId, function(user) {
+            users.emit("request:user", data.owner_id, function(user) {
                 renderUserMessage(user, data);
             });
         }
     }
 
-    messages.on("newMessage", function(data) {
-        createDiv(data);
+    var input = document.createElement("input");
+    var main = document.getElementById("messageBox");
+
+    function createUI() {        
+
+        var msg = document.createElement("button");
+        msg.textContent = "Send message";
+        msg.addEventListener("click", function() {
+            socket.emit("sendMessage", {
+                room: roomId,
+                text: input.value
+            })
+        }, false);
+
+        var h2 = document.createElement("h2");
+
+        h2.textContent = "users in room : ";
+
+        main.appendChild(input);
+        main.appendChild(msg);
+        main.appendChild(h2)
+    }
+
+    socket.on("newMessage", function(data) {
+        if (data.room === roomId) {
+            createDiv(data);    
+        }
     });
 
-    messages.on("provide:recentMessages", function(data) {
-        console.log(data.messages);
+    socket.on("provide:recentMessages", function(data) {
         data.messages.forEach(createDiv);
     });
 
-    messages.on("spamError", function() {
+    socket.on("spamError", function() {
         alert("spammer");
     });
 
+    createUI();
 
-    var main = document.getElementById("main");
-
-    var msg = document.createElement("button");
-    msg.textContent = "Send message";
-    msg.addEventListener("click", function() {
-        messages.emit("sendMessage", {
-            text: input.value
-        })
-    }, false);
-
-    var input = document.createElement("input");
-
-    var h2 = document.createElement("h2");
-
-    h2.textContent = "users who logged in : ";
-
-    main.appendChild(input);
-    main.appendChild(msg);
-    main.appendChild(h2)
-
-    users.on("userJoined", function(user) {
-        if (!userArray[user.userId]) {
-            userArray[user.userId] = user.userData; 
-            renderUserImage(user.userData);
-        }
+    socket.on("userJoined", function(user) {
+        addUser(user.userData)
     });
 
-    users.on("provide:user", function(user) {
-        if (!userArray[user.id]) {
-            userArray[user.id] = user;  
-            renderUserImage(user);
-        }
+    socket.on("provide:user", addUser);
+
+    socket.on("provide:usersInRoom", function(users) {
+        users.forEach(addUser);
+    })
+
+    var roomId = location.pathname.split("/")[2];
+
+    socket.on("ready", function() {
+        socket.emit("joinRoom", {
+            room: roomId
+        }); 
     });
 
-    users.emit("joinRoom", {
-        room: 0
+    socket.on("ready", function() {
+        socket.emit("request:recentMessages", roomId);
     });
-
 };
