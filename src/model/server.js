@@ -224,7 +224,20 @@ var userID = 3;
 /*------------------------------------------------------------------------------
   Get latest messages
 ------------------------------------------------------------------------------*/
-messageModel.getLatestMessages(2, 3, function(err, res) {
+/*messageModel.getLatestMessages(2, 3, function(err, res) {
+	if(err) {
+		util.log(err);
+	} else {
+		res.forEach(function(row) {
+			util.log(JSON.stringify(row));
+		});
+	}
+});*/
+
+/*------------------------------------------------------------------------------
+  Get message range
+------------------------------------------------------------------------------*/
+messageModel.getMessageRange(2, 3, 5, function(err, res) {
 	if(err) {
 		util.log(err);
 	} else {
