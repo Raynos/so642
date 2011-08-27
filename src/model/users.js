@@ -229,3 +229,70 @@ UserModel.prototype.getTotalUsersCount = function(callback) {
 		}
 	});
 };
+
+/*------------------------------------------------------------------------------
+  (public) getRoomsCurrentlyIn
+
+  + userID
+  + callback - err or array of room IDs
+  - void
+  
+  Get total number of users in Redis.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getRoomsCurrentlyIn = function(userID, callback) {
+	this._redisClient.sismembers("user:" + userID + ":rooms_currently_in", function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) setRoomCurrentlyIn
+
+  + userID
+  + roomID
+  + callback - err or native response
+  - void
+  
+  Set specific room to user set of rooms where he is currently in.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.setRoomCurrentlyIn = function(userID, roomID, callback) {
+	this._redisClient.sadd(
+		"user:" + userID + ":rooms_currently_in",
+		"room:" + roomID,
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
+		}
+	);
+};
+
+/*------------------------------------------------------------------------------
+  (public) unsetRoomCurrentlyIn
+
+  + userID
+  + roomID
+  + callback - err or native response
+  - void
+  
+  Removes specific room from a set of user rooms where he is currently in.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.unsetRoomCurrentlyIn = function(userID, roomID, callback) {
+	this._redisClient.srem(
+		"user:" + userID + ":rooms_currently_in",
+		"room:" + roomID,
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
+		}
+	);
+};
