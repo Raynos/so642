@@ -13,11 +13,10 @@
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/proto.css">
+  <link rel="stylesheet" href="/css/site.css">
   <link href='http://fonts.googleapis.com/css?family=Aldrich' rel='stylesheet' type='text/css'>
 
-  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+  <script src="/js/libs/modernizr-2.0.6.min.js"></script>
   <script src='/socket.io/socket.io.js'></script>
 </head>
 <body>
@@ -31,23 +30,23 @@
   <header class="boundary background">
     <div class="content">
       <div id="logoblock" class="left">
-        <img src="img/logo-med.png" title="StackChat - Web chat done right" class="left" />
+        <img src="/img/logo-med.png" title="StackChat - Web chat done right" class="left" />
         <span class="logotext left">STACK<br/>CHAT</span>
       </div>
       <div id="searchblock" class="right padlink">
         <input type="text" size="25" name="search" value="Search" id="search" class="untouched"/>
       </div>
       <div id="linkblock" class="right padlink">
-        <a href="/me">my username</a>
-        <a href="/users">users</a>
-        <a href="/rooms">rooms</a>
-        <a href="/faq">faq</a>
         <% if (user) { %>
-          welcome <%= user.name %>
+          <a href="<%=user.userLink%>"><%=user.name%></a>
         <% } else { %>
           <a href="/auth/google"> google log in </a>
           <a href="/auth/github"> github log in </a>
         <% } %>
+        
+        <a href="/users">users</a>
+        <a href="/rooms">rooms</a>
+        <a href="/faq">faq</a>
       </div>
     </div>
   </header>
