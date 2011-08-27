@@ -73,27 +73,43 @@ MessageModel.prototype.create = function(obj, callback) {
   + callback - err or array of messages
   - void
   
-  Create message in CouchDB.
+  Get latest messages from CouchDB.
 ------------------------------------------------------------------------------*/	
 MessageModel.prototype.getLatestMessages = function(roomID, count, callback) {
-	var self = this,
-		date = new Date();
-
-	self._redisClient.hincrby("increment", "messages", 1, function(err, messageID) {
-		if(err) {
-			callback(err, undefined);
-		} else {
-			self._couchClient.view(
-				"views/getLatestMessages", 
-				{startkey: [roomID, {}], endkey: [roomID],descending: true,limit: count}, 
-				function(err, res) {
-					if(err) {
-						callback(err, undefined);
-					} else {
-						callback(undefined, res);
-					}
-				}
-			);
+	this._couchClient.view(
+		"views/getLatestMessages", 
+		{startkey: [roomID, {}], endkey: [roomID],descending: true,limit: count}, 
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
 		}
-	});
+	);
+};
+
+/*------------------------------------------------------------------------------
+  (public) getMessageRange
+
+  + roomID
+  + fromMessage
+  + toMessage
+  + callback - err or array of messages
+  - void
+  
+  Get latest messages from CouchDB.
+------------------------------------------------------------------------------*/	
+MessageModel.prototype.getMessageRange = function(roomID, fromMessage, toMessage, callback) {
+	this._couchClient.view(
+		"views/getMessageRange", 
+		{startkey: [roomID, "message:" + fromMessage], endkey: [roomID, "message:" + toMessage]}, 
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
+		}
+	);
 };
