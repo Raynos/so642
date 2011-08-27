@@ -70,3 +70,29 @@
       </div>
     </div>
   </footer>
+<div class="spacer">
+</div>
+<div class="spacer">
+</div>
+<div class="viewHeader">
+  <span class="viewTitle">view title goes here</span>
+  <div class="tabs right">
+    <a>thing1</a>
+    <a class="active">thing2</a>
+    <a>thing3</a>
+    <a>thing4</a>
+    <a>thing5</a>
+    <a>thing6</a>
+  </span>
+</div>
+
+<script>
+  /**
+   * this way pagination is consistent across all the pages. Call it as needed.
+   */
+  (function($,currentItem,totalItems){
+    $(function(){
+      paginate($,currentItem,totalItems)
+    })
+  })(window.jQuery,1,10)
+</script>
