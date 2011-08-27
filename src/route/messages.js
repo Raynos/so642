@@ -1,6 +1,11 @@
 module.exports = function _route(app, model, io) {
 	var id = 0,
-		messageArray = {};
+		messageArray = {},
+		roomArray = {};
+
+	roomArray[0] = {
+		users: {}	
+	};
 
 	function provideAll(socket) {
 		var msgs = [];
@@ -17,12 +22,14 @@ module.exports = function _route(app, model, io) {
 	messages.on("connection", function (socket) {
 		socket.timeout = Date.now();
 
+		var user = socket.handshake.session.auth.github.user;
+
 		socket.on("sendMessage", function(data) {
 			if (socket.timeout + 500 < Date.now()) {
 				socket.timeout = Date.now();
 
 				var message = {
-					userId: socket.id,
+					userId: user.id,
 					text: data.text,
 					messageId: id++,
 					timestamp: Date.now()
@@ -32,13 +39,13 @@ module.exports = function _route(app, model, io) {
 
 				messages.emit("newMessage", message);	
 			} else {
-				messages.emit("spamError")
+				socket.emit("spamError")
 			}
 		});
 
 		socket.on("editMessage", function(data) {
 
-			message.emit("messageChanged", {
+			messages.emit("messageChanged", {
 				messageId: data.messageId,
 				text: data.text
 			});
@@ -49,6 +56,24 @@ module.exports = function _route(app, model, io) {
 		});
 
 		provideAll(socket);
+
+	});
+
+	var users = io.of("/users")
+
+	users.on("connection", function(socket) {
+		
+		var user = socket.handshake.session.auth.github.user;
+
+		socket.on("joinRoom", function(data) {
+			roomArray[data.room].users[user.id] = user;
+
+			users.emit("userJoined", {
+				roomId: data.room,
+				userId: user.id,
+				userData: user
+			})
+		});
 
 	});
 };

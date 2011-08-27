@@ -1,11 +1,25 @@
 window.onload = function() {
-	var messages = io.connect('/messages');
+	var messages = io.connect('/messages'),
+		users = io.connect("/users");
+
+	var userArray = {};
 
 	function createDiv(data) {
+		var user = userArray[data.userId];
+
 		var div = document.createElement("div");
 		div.dataset.messageId = data.messageId;
 
-		div.textContent = data.userId + " : " + data.text
+		var img = document.createElement("img");
+
+		img.src = "http://gravatar.com/avatar/" + user.gravatar_id;
+
+		var span = document.createElement("span");
+		span.textContent = user.name + " : " + data.text;
+
+		div.appendChild(img);
+		div.appendChild(span);
+
 		main.insertBefore(div, input);
 	}
 
@@ -37,5 +51,13 @@ window.onload = function() {
 
 	main.appendChild(input);
 	main.appendChild(msg);
+
+	users.on("userJoined", function(user) {
+		userArray[user.userId] = user.userData;
+	});
+
+	users.emit("joinRoom", {
+		room: 0
+	});
 
 };
