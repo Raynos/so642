@@ -38,12 +38,16 @@
         <input type="text" size="25" name="search" value="Search" id="search" class="untouched"/>
       </div>
       <div id="linkblock" class="right padlink">
-        <a href="/me">my username</a>
+        <% if (user) { %>
+          <a href="<%=user.userLink%>"><%=user.name%></a>
+        <% } else { %>
+          <a href="/auth/google"> google log in </a>
+          <a href="/auth/github"> github log in </a>
+        <% } %>
+        
         <a href="/users">users</a>
         <a href="/rooms">rooms</a>
         <a href="/faq">faq</a>
-        <a href="/auth/google"> google log in </a>
-        <a href="/auth/github"> github log in </a>
       </div>
     </div>
   </header>
