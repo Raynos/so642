@@ -3,7 +3,7 @@
 <div class="spacer">
 </div>
 <div class="viewHeader">
-  <span class="viewTitle">view title goes here</span>
+  <span class="viewTitle">Rooms</span>
   <div class="tabs right">
     <a>thing1</a>
     <a class="active">thing2</a>
@@ -14,7 +14,7 @@
   </div>
 </div>
 
-<h2> rooms index </h2>
+<h2>imagine that here lie room cards</h2>
 
 <script>
   /**
@@ -25,4 +25,20 @@
       paginate($,currentItem,totalItems)
     })
   })(window.jQuery,1,10)
+
+  <% if (user) { %>
+  (function($,roomspan){
+    var room = $(roomspan)
+    room.append( $('<span>').addClass('button').attr('id','addRoom').text('add room') )
+    room.append( $('<span>').addClass('button').attr('id','showClosed').text('show closed rooms') )
+  })(window.jQuery,'#roomspan')
+  <% } %>
+  
+  <% if (user.isAdmin) { %>
+  (function($,roomspan){
+    var room = $(roomspan)
+    room.append( $('<span>').addClass('button').attr('id','showDeleted').text('show deleted rooms') )
+  })(window.jQuery,'#roomspan')
+  <% } %>
+  
 </script>
