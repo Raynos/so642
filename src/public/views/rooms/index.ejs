@@ -34,7 +34,7 @@
   })(window.jQuery,'#roomspan')
   <% } %>
   
-  <% if (user.isAdmin) { %>
+  <% if (user && user.isAdmin) { %>
   (function($,roomspan){
     var room = $(roomspan)
     room.append( $('<span>').addClass('button').attr('id','showDeleted').text('show deleted rooms') )
