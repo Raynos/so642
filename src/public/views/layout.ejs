@@ -23,6 +23,8 @@
   <noscript>
     <h1>This site was pretty much written entirely in javascript. If you don't use javascript on the client you're missing out entirely. Please use javascript.</h1>
   </noscript>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
   <div id="voteslug">
       <iframe src="http://nodeknockout.com/iframe/so642" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe>
   </div>
@@ -65,7 +67,7 @@
           <% if (user) { %>
             <span id="addRoom" class="button">add room</span>
             <span id="showClosed" class="button">show closed rooms</span>
-            <% if (user.admin) { %>
+            <% if (user.isAdmin) { %>
               <span id="showDeleted" class="button">show deleted rooms</span>
             <% } %>
           <% } else { %>
@@ -82,9 +84,6 @@
     </div>
   </footer>
 </div> <!--! end of #container -->
-
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
 
 <script>
   /**
