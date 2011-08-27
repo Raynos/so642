@@ -1,1 +1,9 @@
 <h2> users index </h2>
+<% for (var user in users) { %>
+    <div>
+        <a href="<%=users[user].userLink%>">  
+            <%= users[user].name %> 
+        </a> and <%= users[user].email %>
+
+    </div>
+<% } %>
