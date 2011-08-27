@@ -34,6 +34,7 @@ UserModel.prototype._createCouchUser = function(userID, obj, callback) {
 	this._couchClient.save(
 		userID.toString(), 
 		{
+			type: "user",
 			name: obj.name,
 			email: obj.email,
 			password_hash: obj.password_hash,
@@ -169,11 +170,39 @@ UserModel.prototype.getR = function(userID, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) getUserByEmail
+
+  + userEmail
+  + callback - err or user doc
+  - void
+  
+  Get specific user from Redis.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getUserByEmail = function(userEmail, callback) {
+	this._couchClient.view(
+		"views/userByEmail", 
+		//{startKey: "[\"conversation:1234\"]", endKey: "[\"conversation:1234\", {}]"}, 
+		//{startkey: ["conversation:5486", {}], endkey: ["conversation:5486"],descending: "true", limit: 2}, 
+		{key: userEmail},
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
+			/*res.forEach(function(row) {
+				util.log(row.conversationID + " - " + row.timestamp);
+			});*/
+		}
+	);
+};
+
+/*------------------------------------------------------------------------------
   (public) getRange
 
   + startIndex
   + endIndex
-  + callback - err or array of users IDs
+  + callback - err or array of user IDs
   - void
   
   Get specific range of users from Redis.

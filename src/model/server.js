@@ -8,7 +8,7 @@ var roomModel = new RoomModel();
 /*------------------------------------------------------------------------------
   Create new user in Couch and Redis
 ------------------------------------------------------------------------------*/
-userModel.create(
+/*userModel.create(
 	{
 		name: "Johny Bravo",
 		email: "johny@bravo.com",
@@ -46,7 +46,7 @@ userModel.create(
 			});
 		}
 	}
-);
+);*/
 
 userModel.getRange(0, -1, function(err, res) {
 	if(err) {
@@ -64,6 +64,14 @@ userModel.getRange(0, -1, function(err, res) {
 	}
 });
 
+userModel.getUserByEmail("johny1@bravo.com", function(err, res) {
+	if(err) {
+		util.log(err);
+	} else {
+		util.log("user: " + JSON.stringify(res));
+	}
+});
+
 /*------------------------------------------------------------------------------
   Create new room in Redis
 ------------------------------------------------------------------------------*/
@@ -73,7 +81,7 @@ var userID = 1;
 // create new room - in callback we separately assign user as owner, current,
 // read and write access. In their callbacks we get these informations back 
 // through get methods.
-roomModel.create(
+/*roomModel.create(
 	userID,
 	{
 		name: "My super room",
@@ -172,7 +180,7 @@ roomModel.create(
 			});
 		}
 	}
-);
+);*/
 
 roomModel.getRange(0, -1, function(err, res) {
 	if(err) {

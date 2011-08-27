@@ -24,8 +24,9 @@ var RoomModel = module.exports = function RoomModel() {
 /*------------------------------------------------------------------------------
   (public) create
 
+  + userID
   + obj
-  + callback - in case of success res would be id of a newly created room
+  + callback - err or roomID
   - void
   
   Creates new room.
@@ -75,7 +76,7 @@ RoomModel.prototype.create = function(userID, obj, callback) {
   (public) get
 
   + roomID
-  + callback
+  + callback - err or room object
   - void
   
   Get specific room from Redis.
@@ -94,7 +95,7 @@ RoomModel.prototype.get = function(roomID, callback) {
   (public) getOwners
 
   + roomID
-  + callback - err or native response
+  + callback - err or array of user IDs
   - void
   
   Get room owners from Redis.
@@ -137,7 +138,7 @@ RoomModel.prototype.setOwner = function(userID, roomID, callback) {
   (public) getCurrentUsers
 
   + roomID
-  + callback - err or native response
+  + callback - err or array of user IDs
   - void
   
   Get room current users from Redis.
@@ -180,7 +181,7 @@ RoomModel.prototype.setCurrentUser = function(userID, roomID, callback) {
   (public) getReadAccessUsers
 
   + roomID
-  + callback - err or native response
+  + callback - err or array of user IDs
   - void
   
   Get room users which have read access from Redis.
@@ -223,7 +224,7 @@ RoomModel.prototype.setReadAccess = function(userID, roomID, callback) {
   (public) getWriteAccessUsers
 
   + roomID
-  + callback - err or native response
+  + callback - err or array of user IDs
   - void
   
   Get room users which have read access from Redis.
@@ -267,7 +268,7 @@ RoomModel.prototype.setWriteAccess = function(userID, roomID, callback) {
 
   + startIndex
   + endIndex
-  + callback - err or array of rooms IDs
+  + callback - err or array of room IDs
   - void
   
   Get specific range of rooms from Redis.
