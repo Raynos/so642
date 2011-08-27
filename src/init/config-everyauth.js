@@ -1,7 +1,8 @@
 var everyauth = require("everyauth"),
     rest = require("../../node_modules/everyauth/lib/restler.js"),
     url = require("url"),
-    users = require("../model/users.js");
+    users = require("../model/users.js"),
+    crypto = require("crypto");
 
 var User = new users();
 
@@ -107,7 +108,8 @@ module.exports = function(app) {
                     });  
                 } else {
                     var obj = user[0].value;
-                    obj.id = user[0].id
+                    obj.id = user[0].id.split(":")[1];
+                    console.log(obj);
                     p.fulfill(obj);
                 }
             });
@@ -116,6 +118,14 @@ module.exports = function(app) {
     .redirectPath('/');
 
     createGoogle();
+
+    function generateGravatar(email) {
+        email = email.trim();
+        email = email.toLowerCase();
+        md5 = crypto.createHash('md5');
+        md5.update(email);
+        return md5.digest('hex');
+    }
 
     everyauth.google2
         .appId(process.env.googleId)
@@ -127,7 +137,8 @@ module.exports = function(app) {
                 if (user.length === 0) {
                     User.create({
                        name: google[0].name.$t,
-                       email: google[0].email.$t
+                       email: google[0].email.$t,
+                       gravatar_hash: generateGravatar(google[0].email.$t)
                     }, function(err, id) {
                         User.getR(id, function(err, res) {
                             p.fulfill(res);
@@ -135,7 +146,7 @@ module.exports = function(app) {
                     });  
                 } else {
                     var obj = user[0].value;
-                    obj.id = user[0].id
+                    obj.id = user[0].id.split(":")[1];
                     p.fulfill(obj);
                 }
             });
