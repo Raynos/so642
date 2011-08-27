@@ -32,13 +32,13 @@ module.exports = function _route(app, model, io) {
 
 				messages.emit("newMessage", message);	
 			} else {
-				messages.emit("spamError")
+				socket.emit("spamError")
 			}
 		});
 
 		socket.on("editMessage", function(data) {
 
-			message.emit("messageChanged", {
+			messages.emit("messageChanged", {
 				messageId: data.messageId,
 				text: data.text
 			});
