@@ -82,7 +82,11 @@ module.exports = function(app) {
 
     everyauth.everymodule
         .findUserById(function(id, cb) {
-            User.getR(id, cb);
+            User.getR(id, function(err, user) {
+                user.id = id;
+                user.userLink = "/users/" + user.id + "/" + user.name
+                cb(err, user);
+            });
         });
 
 	everyauth.github
