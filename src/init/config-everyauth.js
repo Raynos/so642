@@ -7,13 +7,22 @@ module.exports = function(app) {
 		.appId(process.env.githubId)
 		.appSecret(process.env.githubSecret)
 		.findOrCreateUser(function(session, token, tokenExtra, github) {
-            console.log(github);
-
             return {
                 name: github.name,
                 id: github.id,
                 avatar: github.gravatar_id
             };
 		})
-		.redirectPath('/')
+		.redirectPath('/');
+
+    everyauth.google
+        .appId(process.env.googleId)
+        .appSecret(process.env.googleSecret)
+        .scope('https://www.google.com/m8/feeds')
+        .findOrCreateUser(function(session, token, tokenExtra, google) {
+            return {
+                id: google.id
+            }
+        })
+        .redirectPath('/');
 }
