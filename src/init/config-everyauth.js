@@ -109,7 +109,6 @@ module.exports = function(app) {
                 } else {
                     var obj = user[0].value;
                     obj.id = user[0].id.split(":")[1];
-                    console.log(obj);
                     p.fulfill(obj);
                 }
             });
