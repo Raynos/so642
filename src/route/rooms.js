@@ -7,7 +7,8 @@ module.exports = function _route(app, model, io) {
         Room.getRange(0, -1, function(err, data) {
             var cb = after(data.length, function() {
                 res.render("rooms/index", {
-                    rooms: arguments
+                    rooms: arguments,
+                    categories: {}
                 }); 
             });
             
@@ -42,8 +43,14 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.post("/rooms", function(req, res) {     
-        res.redirect("/rooms/0/");
+    app.post("/rooms", function(req, res) { 
+        Room.create(req.user.id, req.body, function (err, roomId) {
+            Room.get(roomId, function(err, room) {
+                room.id = roomId;
+                room.roomLink = '/rooms/' + room.id + "/" + room.name;
+                res.send(room); 
+            });
+        });
     });
 
     app.put("/rooms/:roomId/:title?", function(req, res) {
