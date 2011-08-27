@@ -33,7 +33,7 @@ var RoomModel = module.exports = function RoomModel() {
 ------------------------------------------------------------------------------*/
 RoomModel.prototype.assignWriteAccess = function(userID, roomID, callback) {
 	this._redisClient.sadd(
-		"room:" + roomID + ":write_acess", 
+		"room:" + roomID + ":write_access", 
 		"user:" + userID,
 		function(err, res) {
 			if(err) {
@@ -157,6 +157,101 @@ RoomModel.prototype.create = function(userID, obj, callback) {
 					}
 				}	
 			);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) get
+
+  + roomID
+  + callback
+  - void
+  
+  Get specific room from Redis.
+------------------------------------------------------------------------------*/	
+RoomModel.prototype.get = function(roomID, callback) {
+	this._redisClient.hgetall("room:" + roomID, function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getOwners
+
+  + roomID
+  + callback
+  - void
+  
+  Get room owners from Redis.
+------------------------------------------------------------------------------*/	
+RoomModel.prototype.getOwners = function(roomID, callback) {
+	this._redisClient.smembers("room:" + roomID + ":owners", function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getCurrentUsers
+
+  + roomID
+  + callback
+  - void
+  
+  Get room current users from Redis.
+------------------------------------------------------------------------------*/	
+RoomModel.prototype.getCurrentUsers = function(roomID, callback) {
+	this._redisClient.smembers("room:" + roomID + ":current_users", function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getReadAccessUsers
+
+  + roomID
+  + callback
+  - void
+  
+  Get room users which have read access from Redis.
+------------------------------------------------------------------------------*/	
+RoomModel.prototype.getReadAccessUsers = function(roomID, callback) {
+	this._redisClient.smembers("room:" + roomID + ":read_access", function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getWriteAccessUsers
+
+  + roomID
+  + callback
+  - void
+  
+  Get room users which have read access from Redis.
+------------------------------------------------------------------------------*/	
+RoomModel.prototype.getWriteAccessUsers = function(roomID, callback) {
+	this._redisClient.smembers("room:" + roomID + ":write_access", function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
 		}
 	});
 };
