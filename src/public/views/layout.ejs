@@ -1,0 +1,93 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title></title>
+  <meta name="description" content="This website is an entry for nodeknockout2011">
+  <meta name="author" content="jcolebrand, raynos, yojimbo87">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/proto.css">
+  <link href='http://fonts.googleapis.com/css?family=Aldrich' rel='stylesheet' type='text/css'>
+
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+  <script src='/socket.io/socket.io.js'></script>
+</head>
+<body>
+  <div id="voteslug">
+      <iframe src="http://nodeknockout.com/iframe/so642" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe>
+  </div>
+<div id="container">
+  <%- body %>
+</div> <!--! end of #container -->
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+<script>
+  /**
+   * this is for the search box
+   * wrapped in a closure for sanity
+   */
+  (function($,id){
+    $(function(){
+      $(id)
+        .click( searchClick )
+        .blur( searchBlur )
+        .keypress( searchKeypress )
+        .keyup( searchKeyup )
+      
+      function searchClick(event){
+        var that = $(this)
+        if (that && that.hasClass('untouched') && that.val() === 'Search' ){
+          that.removeClass('untouched').val('')
+        }
+      }
+      
+      function searchBlur(event){
+        var that = $(this)
+        if (that && !that.hasClass('untouched') && ( that.val() === 'Search' || that.val() === '' )){
+          that.addClass('untouched').val('Search')
+        }
+      }
+      
+      function searchKeypress(event){
+        var that = $(this)
+        /* if they press enter */
+        if( that && event.which === 13 ){
+          /* do something here to search for the value and redirect */
+        }
+      }
+      
+      function searchKeyup(event){
+        var that = $(this)
+        /* if they press esc */
+        if( that && event.which === 27 ){
+          that.val('')
+        }
+      }
+    })
+  })(window.jQuery,'#search');
+</script>
+
+<script>
+    var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-25222034-2']);
+      _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
+</body>
+</html>
