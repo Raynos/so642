@@ -14,17 +14,40 @@
 </div>
 
 <h2> imagine that here lie room cards </h2>
-<div id="roomsContainer">
+  <div id="cards rooms">
 <% for (var room in rooms) { %>
-  <div>
-    <a href="<%=rooms[room].roomLink%>"> <%= rooms[room].name %> </a>
-  </div>
+            <div class="cardshadow">
+              <div class="cardouter">
+                <div class="cardinner">
+                  <div class="textinner">
+                    <div class="starbox"> 
+                      <a href="/chat/<%= room.id %>/"><span class="join">join</span></a><span class="star <% if(room.starred===0){ %>starred<% } %>"></span>
+                    </div>
+                      <a href="/chat/<%= room.id %>/"><span class="cardname"><%=room.name%></span></a><br/>
+                      <span class="cardtext"><%= room.description %></span>
+                      <div class="histogram" title="This is a pretty good representation of the activity in this room over the course of a 24 hour period. The current time is highlighted by the vertical bar.">
+                        histogram goes here
+                      </div>
+                      <div class="bottomline">
+                        <a href="/transcript/<%= room.id %>/"><span class="transcript">transcript</span></a>
+                        <a href="/rooms/<%= room.id %>/"><span class="info right">info</span></a>
+                      </div>
+                  </div>
+                  <div class="textnumbers">
+                    <p class="number" title="users in the room right now"><%= room.currentUsers %></p>
+                    <p class="number" title="users ever in this room"><%= room.maxUsers %></p>
+                    <p class="number" title="messages sent in the past 24 hours"><%= room.daysCount %></p>
+                    <p class="number" title="total messages sent in this room"><%= room.totalMessages %></p>
+                  </div>
+                </div>
+              </div>
+            </div>
 <% } %>
-</div>
+  </div>
 
 <script>
   /**
-   * this way pagination is consistent across all the pages. Call it as needed.
+   * this way pagination is consistent across all the pages. Call it as needed. 16 items per page right now
    */
   (function ($,currentItem,totalItems){
     $(function (){
