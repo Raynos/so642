@@ -78,7 +78,7 @@ function createGoogle() {
 }
 
 module.exports = function(app) {
-	everyauth.debug = true;
+  everyauth.debug = true;
 
     everyauth.everymodule
         .findUserById(function(id, cb) {
@@ -89,10 +89,10 @@ module.exports = function(app) {
             });
         });
 
-	everyauth.github
-		.appId(process.env.githubId)
-		.appSecret(process.env.githubSecret)
-		.findOrCreateUser(function(session, token, tokenExtra, github) {
+  everyauth.github
+    .appId(process.env.githubId)
+    .appSecret(process.env.githubSecret)
+    .findOrCreateUser(function(session, token, tokenExtra, github) {
             var p = this.Promise();
             User.getUserByEmail(github.email, function(err, user) {
                 if (user.length === 0) {
@@ -112,8 +112,8 @@ module.exports = function(app) {
                 }
             });
             return p;
-		})
-		.redirectPath('/');
+    })
+    .redirectPath('/');
 
     createGoogle();
 
