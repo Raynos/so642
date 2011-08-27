@@ -39,7 +39,7 @@ function createGoogle() {
         var parsedUrl = url.parse(req.url, true)
           , errorDesc = parsedUrl.query.error + "; " + parsedUrl.query.error_description;
         if (res.render) {
-          res.render(__dirname + '/../views/auth-fail.jade', {
+          res.render('auth-fail.jade', {
             errorDescription: errorDesc
           });
         } else {
@@ -53,7 +53,7 @@ function createGoogle() {
 
       .fetchOAuthUser( function (accessToken) {
         var promise = this.Promise();
-        rest.get(this.apiHost() + '/contacts/default/full', {
+        rest.get(this.apiHost() + '/contacts/default/full'w, {
           query: { oauth_token: accessToken, alt: 'json' }
         }).on('success', function (data, res) {
           var oauthUser = data.feed.author;
