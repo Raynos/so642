@@ -2,6 +2,8 @@
 html(lang="en")
   head
     title= typeof(title) !== 'undefined' ? title : "StackChat"
+    script(src='/socket.io/socket.io.js')
+    script(src='/js/socket.io-demo.js')
   body
     #main
       != body
