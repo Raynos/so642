@@ -5,6 +5,7 @@
 	"author": "J Verbaten",
 	"dependencies": {
 		"express": "2.4.5",
+		"nko": "*",
 		"less": "1.1.4",
 		"jade": "0.15.2",
 		"traits": "0.4.0",
