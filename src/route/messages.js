@@ -121,7 +121,7 @@ module.exports = function _route(app, model, io) {
                         break;
                     }
                 }
-                Room.removeCurrentUser(user.id, room.id, function(err, res) {
+                Room.unsetCurrentUser(user.id, room.id, function(err, res) {
                     room.removeUser(socket);
                     room.emit("userLeft", {
                         roomId: room.id,

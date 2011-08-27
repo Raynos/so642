@@ -237,7 +237,7 @@ var userID = 3;
 /*------------------------------------------------------------------------------
   Get message range
 ------------------------------------------------------------------------------*/
-messageModel.getMessageRange(2, 3, 5, function(err, res) {
+/*messageModel.getMessageRange(2, 3, 5, function(err, res) {
 	if(err) {
 		util.log(err);
 	} else {
@@ -245,4 +245,4 @@ messageModel.getMessageRange(2, 3, 5, function(err, res) {
 			util.log(JSON.stringify(row));
 		});
 	}
-});
+});*/
