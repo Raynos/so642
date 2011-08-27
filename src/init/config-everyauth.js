@@ -39,7 +39,7 @@ function createGoogle() {
         var parsedUrl = url.parse(req.url, true)
           , errorDesc = parsedUrl.query.error + "; " + parsedUrl.query.error_description;
         if (res.render) {
-          res.render(__dirname + '/../views/auth-fail.jade', {
+          res.render('auth-fail.jade', {
             errorDescription: errorDesc
           });
         } else {
