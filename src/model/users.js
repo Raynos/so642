@@ -13,12 +13,12 @@ var util = require("util"),
 var UserModel = module.exports = function UserModel() {
 	var couchCon = new(cradle.Connection)(
 		"173.230.137.226", 5984, 
-		{auth: { username: "cotoja", password: "cotoja4004"}}
+		{auth: { username: "cotoja", password: process.env.COUCH_PWD}}
 	);
 	this._couchClient = couchCon.database("stackchat");
 	
 	this._redisClient = redis.createClient(6379, "173.230.137.226");
-	this._redisClient.auth("cotoja1021", function() {});
+	this._redisClient.auth(process.env.REDIS_PWD, function() {});
 };
 
 /*------------------------------------------------------------------------------
