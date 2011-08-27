@@ -178,6 +178,30 @@ RoomModel.prototype.setCurrentUser = function(userID, roomID, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) unsetCurrentUser
+
+  + userID
+  + roomsID
+  + callback - err or native response
+  - void
+  
+  Removes user from specific room current users.
+------------------------------------------------------------------------------*/
+RoomModel.prototype.unsetCurrentUser = function(userID, roomID, callback) {
+	this._redisClient.srem(
+		"room:" + roomID + ":current_users", 
+		"user:" + userID,
+		function(err, res) {
+			if(err) {
+				callback(err, undefined);
+			} else {
+				callback(undefined, res);
+			}
+		}
+	);
+};
+
+/*------------------------------------------------------------------------------
   (public) getReadAccessUsers
 
   + roomID
