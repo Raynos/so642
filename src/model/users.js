@@ -32,7 +32,7 @@ var UserModel = module.exports = function UserModel() {
 ------------------------------------------------------------------------------*/	
 UserModel.prototype._createCouchUser = function(userID, obj, callback) {
 	this._couchClient.save(
-		userID.toString(), 
+		"user:" + userID.toString(), 
 		{
 			type: "user",
 			name: obj.name,
@@ -141,7 +141,7 @@ UserModel.prototype.create = function(obj, callback) {
   Get specific user from CouchDB.
 ------------------------------------------------------------------------------*/	
 UserModel.prototype.getC = function(userID, callback) {
-	this._couchClient.get(userID, function(err, doc) {
+	this._couchClient.get("user:" + userID, function(err, doc) {
 		if(err) {
 			callback(err, undefined);
 		} else {
@@ -181,8 +181,6 @@ UserModel.prototype.getR = function(userID, callback) {
 UserModel.prototype.getUserByEmail = function(userEmail, callback) {
 	this._couchClient.view(
 		"views/userByEmail", 
-		//{startKey: "[\"conversation:1234\"]", endKey: "[\"conversation:1234\", {}]"}, 
-		//{startkey: ["conversation:5486", {}], endkey: ["conversation:5486"],descending: "true", limit: 2}, 
 		{key: userEmail},
 		function(err, res) {
 			if(err) {
@@ -190,9 +188,6 @@ UserModel.prototype.getUserByEmail = function(userEmail, callback) {
 			} else {
 				callback(undefined, res);
 			}
-			/*res.forEach(function(row) {
-				util.log(row.conversationID + " - " + row.timestamp);
-			});*/
 		}
 	);
 };
