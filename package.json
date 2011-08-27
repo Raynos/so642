@@ -17,5 +17,8 @@
 		"connect-gzip": "0.1.0",
 		"everyauth": "0.2.18"
 	},
+	"devDependencies": {
+		"forever": "0.6.5"
+	},
 	"private": true
 }
