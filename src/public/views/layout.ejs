@@ -32,8 +32,10 @@
   <header class="boundary background">
     <div class="content">
       <div id="logoblock" class="left">
-        <img src="/img/logo-med.png" title="StackChat - Web chat done right" class="left" />
-        <span class="logotext left">STACK<br/>CHAT</span>
+        <a href="/">
+          <img src="/img/logo-med.png" title="StackChat - Web chat done right" class="left" />
+          <span class="logotext left">STACK<br/>CHAT</span>
+        </a>
       </div>
       <div id="searchblock" class="right padlink">
         <input type="text" size="25" name="search" value="Search" id="search" class="untouched"/>
@@ -64,14 +66,6 @@
         <div id="bottomPager" class="pager left">
         </div>
         <div class="roomspan right">
-          <% if (user) { %>
-            <span id="addRoom" class="button">add room</span>
-            <span id="showClosed" class="button">show closed rooms</span>
-            <% if (user.isAdmin) { %>
-              <span id="showDeleted" class="button">show deleted rooms</span>
-            <% } %>
-          <% } else { %>
-          <% } %>
         </div>
       </div>
     </div>
@@ -123,7 +117,7 @@
       class = 'pagenumber'
       if (!ctr) { class += ' this' } /* aren't I a clever shit. If we're on counter 0 then that's this page */
       if ((cP + ctr) > 0){
-        pager.append( $('<span>').addClass(class).text('ctr') )
+        pager.append( $('<span>').addClass(class).text(ctr) )
       }
     }
     /* if there are at least two more pages, put a space and the last number */
