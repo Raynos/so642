@@ -42,6 +42,12 @@
         <a href="/users">users</a>
         <a href="/rooms">rooms</a>
         <a href="/faq">faq</a>
+        <% if (user) { %>
+          welcome <%= user.name %>
+        <% } else { %>
+          <a href="/auth/google"> google log in </a>
+          <a href="/auth/github"> github log in </a>
+        <% } %>
       </div>
     </div>
   </header>
