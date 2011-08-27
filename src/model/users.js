@@ -98,23 +98,61 @@ UserModel.prototype._createRedisUser = function(userID, obj, callback) {
 UserModel.prototype.create = function(obj, callback) {
 	var self = this;
 	
-	self._redisClient.hincrby("increment", "users", 1, function(err, res) {
+	self._redisClient.hincrby("increment", "users", 1, function(err, userID) {
 		if(err) {
 			callback(err, undefined);
 		} else {
-			self._createCouchUser(res, obj, function(err2, res2) {
+			self._createCouchUser(userID, obj, function(err2, res2) {
 				if(err2) {
 					callback(err2, undefined);
 				} else {
-					self._createRedisUser(res, obj, function(err3, res3) {
+					self._createRedisUser(userID, obj, function(err3, res3) {
 						if(err3) {
 							callback(err3, undefined);
 						} else {
-							callback(undefined, res3);
+							callback(undefined, userID);
 						}
 					});
 				}
 			});
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getC
+
+  + userID
+  + callback
+  - void
+  
+  Get specific user from CouchDB.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getC = function(userID, callback) {
+	this._couchClient.get(userID, function(err, doc) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, doc);
+		}
+	});
+};
+
+/*------------------------------------------------------------------------------
+  (public) getR
+
+  + userID
+  + callback
+  - void
+  
+  Get specific user from Redis.
+------------------------------------------------------------------------------*/	
+UserModel.prototype.getR = function(userID, callback) {
+	this._redisClient.hgetall("user:" + userID, function(err, res) {
+		if(err) {
+			callback(err, undefined);
+		} else {
+			callback(undefined, res);
 		}
 	});
 };
