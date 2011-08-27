@@ -62,8 +62,14 @@
         <div id="bottomPager" class="pager left">
         </div>
         <div class="roomspan right">
-          <span id="addRoom" class="button">add room</span>
-          <span id="showFrozen" class="button">show frozen rooms</span>
+          <% if (user) { %>
+            <span id="addRoom" class="button">add room</span>
+            <span id="showClosed" class="button">show closed rooms</span>
+            <% if (user.admin) { %>
+              <span id="showDeleted" class="button">show deleted rooms</span>
+            <% } %>
+          <% } else { %>
+          <% } %>
         </div>
       </div>
     </div>
