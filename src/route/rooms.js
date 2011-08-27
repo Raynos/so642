@@ -7,7 +7,8 @@ module.exports = function _route(app, model, io) {
         Room.getRange(0, -1, function(err, data) {
             var cb = after(data.length, function() {
                 res.render("rooms/index", {
-                    rooms: arguments
+                    rooms: arguments,
+                    categories: {}
                 }); 
             });
             
