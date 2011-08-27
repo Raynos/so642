@@ -92,7 +92,7 @@ module.exports = function(app) {
 		.findOrCreateUser(function(session, token, tokenExtra, github) {
             var p = this.Promise();
             User.getUserByEmail(github.email, function(err, user) {
-                if (users.length === 0) {
+                if (user.length === 0) {
                     User.create({
                         name: github.name,
                         email: github.email,
@@ -119,7 +119,7 @@ module.exports = function(app) {
         .findOrCreateUser(function(session, _, _, google) {
             var p = this.Promise();
             User.getUserByEmail(google[0].email.$t, function(err, user) {
-                if (users.length === 0) {
+                if (user.length === 0) {
                     User.create({
                        name: google[0].name.$t,
                        email: google[0].email.$t
