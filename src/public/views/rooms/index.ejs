@@ -14,31 +14,44 @@
   </div>
 </div>
 
-<h2>imagine that here lie room cards</h2>
+<h2> imagine that here lie room cards </h2>
+<% for (var room in rooms) { %>
+  <div>
+    <a href="<%=rooms[room].roomLink%>"> <%= rooms[room].name %> </a>
+  </div>
+<% } %>
 
 <script>
   /**
    * this way pagination is consistent across all the pages. Call it as needed.
    */
-  (function($,currentItem,totalItems){
-    $(function(){
-      paginate($,currentItem,totalItems)
+  (function _runIt($,currentItem,totalItems){
+    $(function _notAnon(){
+      paginate($,currentItem,totalItems);
     })
-  })(window.jQuery,1,10)
+  })(window.jQuery,1,10);
 
   <% if (user) { %>
   (function($,roomspan){
-    var room = $(roomspan)
-    room.append( $('<span>').addClass('button').attr('id','addRoom').text('add room') )
-    room.append( $('<span>').addClass('button').attr('id','showClosed').text('show closed rooms') )
-  })(window.jQuery,'#roomspan')
+    $(function() {
+      var room = $(roomspan)
+      room.append( $('<span>').addClass('button').attr('id','addRoom').text('add room') );
+      room.append( $('<span>').addClass('button').attr('id','showClosed').text('show closed rooms') );
+    });
+    
+  })(window.jQuery,'.roomspan');
+
   <% } %>
   
   <% if (user && user.isAdmin) { %>
   (function($,roomspan){
-    var room = $(roomspan)
-    room.append( $('<span>').addClass('button').attr('id','showDeleted').text('show deleted rooms') )
-  })(window.jQuery,'#roomspan')
+    $(function() {
+      var room = $(roomspan)
+      room.append( $('<span>').addClass('button').attr('id','showDeleted').text('show deleted rooms') );
+    });
+  })(window.jQuery,'.roomspan');
   <% } %>
+  
+  
   
 </script>
