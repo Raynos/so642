@@ -72,10 +72,10 @@ MessageModel.prototype.create = function(obj, callback) {
   + callback - err or room object
   - void
   
-  Get specific message from Redis.
+  Get specific message from CouchDB.
 ------------------------------------------------------------------------------*/    
 MessageModel.prototype.get = function(messageID, callback) {
-    this._redisClient.hgetall("message:" + messageID, function(err, res) {
+    this._couchClient.get("message:" + messageID, function(err, res) {
         if(err) {
             callback(err, undefined);
         } else {
