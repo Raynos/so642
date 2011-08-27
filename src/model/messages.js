@@ -66,6 +66,25 @@ MessageModel.prototype.create = function(obj, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) get
+
+  + messageID
+  + callback - err or room object
+  - void
+  
+  Get specific message from Redis.
+------------------------------------------------------------------------------*/    
+MessageModel.prototype.get = function(messageID, callback) {
+    this._redisClient.hgetall("message:" + messageID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
   (public) getLatestMessages
 
   + roomID
