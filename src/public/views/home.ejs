@@ -1,68 +1,26 @@
-  <header class="boundary background">
-    <div class="content">
-      <div id="logoblock" class="left">
-        <img src="img/logo-med.png" title="StackChat - Web chat done right" class="left" />
-        <span class="logotext left">STACK<br/>CHAT</span>
-      </div>
-      <div id="searchblock" class="right padlink">
-        <input type="text" size="25" name="search" value="Search" id="search" class="untouched"/>
-      </div>
-      <div id="linkblock" class="right padlink">
-        <a href="/me">my username</a>
-        <a href="/users">users</a>
-        <a href="/rooms">rooms</a>
-        <a href="/faq">faq</a>
-        <a href="/auth/google"> google log in </a>
-        <a href="/auth/github"> github log in </a>
-      </div>
-    </div>
-  </header>
-  <div id="main" role="main">
-    <div class="content paged">
-      <div class="spacer">
-      </div>
-      <div class="spacer">
-      </div>
-      <div class="viewHeader">
-        <span class="viewTitle">view title goes here</span>
-        <div class="tabs right">
-          <a>thing1</a>
-          <a class="active">thing2</a>
-          <a>thing3</a>
-          <a>thing4</a>
-          <a>thing5</a>
-          <a>thing6</a>
-        </span>
-      </div>
-    </div>
-  </div>
-  <footer>
-    <div class="pagerholder">
-      <div class="content">
-        <div class=" pager left">
-          <span class="pagenumber prev" title="class prev">prev</span>
-          <span class="pagenumber this" title="class this">1</span>
-          <span class="pagenumber space" title="class space">...</span>
-          <span class="pagenumber">2</span>
-          <span class="pagenumber">3</span>
-          <span class="pagenumber this" class="class this">4</span>
-          <span class="pagenumber">5</span>
-          <span class="pagenumber">6</span>
-          <span class="pagenumber space" title="class space">...</span>
-          <span class="pagenumber ">7</span>
-          <span class="pagenumber next">next</span>
-        </div>
-        <div class="roomspan right">
-          <span id="addRoom" class="button">add room</span>
-          <span id="showFrozen" class="button">show frozen rooms</span>
-        </div>
-      </div>
-    </div>
-    <div class="boundary background">
-      <div class="content padlink">
-        <a href="/faq" >faq</a>
-        <a href="/legal" >legal</a>
-        <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" class="right"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a> 
-      </div>
-    </div>
-  </footer>
+<div class="spacer">
+</div>
+<div class="spacer">
+</div>
+<div class="viewHeader">
+  <span class="viewTitle">view title goes here</span>
+  <div class="tabs right">
+    <a>thing1</a>
+    <a class="active">thing2</a>
+    <a>thing3</a>
+    <a>thing4</a>
+    <a>thing5</a>
+    <a>thing6</a>
+  </span>
+</div>
+
+<script>
+  /**
+   * this way pagination is consistent across all the pages. Call it as needed.
+   */
+  (function($,currentItem,totalItems){
+    $(function(){
+      paginate($,currentItem,totalItems)
+    })
+  })(window.jQuery,1,10)
+</script>
