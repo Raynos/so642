@@ -1,0 +1,18 @@
+/* the humans responsible & colophon */
+/* humanstxt.org */
+
+/* TEAM */
+  designer: jcolebrand
+  datamaster: yojimbo87
+  interconnector: raynos
+  Site: stackchat
+  Location: everywhere
+  Github: https://github.com/nko2/so642
+
+/* THANKS */
+  Names (& URL): nodeknockout
+
+/* SITE */
+  Standards: HTML5, CSS3
+  Components: Modernizr, jQuery
+  Software:
