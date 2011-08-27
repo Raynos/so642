@@ -7,7 +7,7 @@ var configure = function(app, sessionStore) {
 
 	app.configure(function(){
 		app.set('views', __dirname + '/../public/views');
-		app.set("view engine", "jade");
+		app.set("view engine", "ejs");
 		app.use(express.bodyParser());
 		app.use(function(req, res, next) {
 			req.body = req.body || {};
