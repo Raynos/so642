@@ -5,12 +5,9 @@
 <div class="viewHeader">
   <span class="viewTitle">Rooms</span>
   <div class="tabs right">
-    <a>thing1</a>
-    <a class="active">thing2</a>
-    <a>thing3</a>
-    <a>thing4</a>
-    <a>thing5</a>
-    <a>thing6</a>
+    <% for(var i = 0; i < categories.length; i++){ %>
+    <a href="/rooms/?category=<%= categories[i] %>" <% if(i===0){ class="active" } %> ><%= categories[i] %></a>
+    <% } %>
   </div>
 </div>
 
