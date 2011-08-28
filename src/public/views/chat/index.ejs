@@ -13,7 +13,7 @@
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <link rel="stylesheet" href="/css/chat.less">  
+  <link rel="stylesheet" href="/css/chat.css">  
   <link href='http://fonts.googleapis.com/css?family=Aldrich' rel='stylesheet' type='text/css'>
   <script src="/js/libs/modernizr-2.0.6.min.js"></script>
   
@@ -270,6 +270,105 @@
     sayIt( inp.val() );
     inp.val('');
   }
+  
+  
+  function renderMessage(message) {
+    /* get the user so we can have their details */
+    var user = userArray[message.owner_id];
+    
+    /* if we didn't have a user, let's get one and try this again */
+    if (!user) {
+      socket.emit("request:user", message.owner_id, function(user) {
+        reRenderUserMessage(user, message);
+      });
+      return;
+    }
+    
+    if (message.type !== "message") { 
+      /* we need to handle other message types differently here */
+      /* TODO */
+      return; 
+    }
+    
+    var data = {};
+    data.name = user.name;
+    data.userid = user.id;
+    data.gravatar_hash = user.gravatar_hash;
+    data.isUser = (userId === message.owner_id) ? 1 : 0;
+    
+    data.id = message.id;
+    data.userid = message.owner_id;
+    data.deleted = message.deleted;
+    data.starred = message.starred.length;
+    data.flagged = message.flagged.length;
+    data.timestamp = message.timestamp;
+    data.timedisplay = new Date(data.timestamp).toLocaleTimeString();
+    data.history = message.history;
+    
+    //if the message doesn't exist yet in the local array
+    var previousMessage = $('#message-'+message.id).parents('.messagebox');
+    if (!previousMessage.size()){
+    
+      /* since we need to now insert this into the page somewhere, we need to find the best place to put it */
+      
+      /* this is the naive way */
+      //push the data into the template on the page
+      //$.tmpl( messagebox, data ).appendTo( '#chat' );
+      var inserted_message;
+      previousMessage = $('#chat');
+      var previousid = 0;
+      for (var k in messageArray){ var m = messageArray[k];
+        if (parseInt(m.id) > parseInt(previousid) && parseInt(m.id) < parseInt(message.id)){
+          previousid = m.id;
+        }
+      }
+      if (previousid){ previousMessage = $('#message-'+previousid).parents('.messagebox');}
+      inserted_message = $.tmpl( messagebox, data );
+      inserted_message.after( previousMessage );
+    } else {
+      /* just remove the previous message and replace it with the new one */        
+      inserted_message = $.tmpl( messagebox, data );
+      inserted_message.after( previousMessage );
+      previousMessage.remove();
+    }
+    
+    /* TODO */
+    if (data.deleted) {  /* if data.deleted is null or falsy, show the text, else show deleted.*/
+      inserted_message.find('.content').html('<i>Deleted</i>');
+    } else if (data.isRendered){  /* if we already parsed and rendered it on the server, excellent, let's use that */
+      inserted_message.find('.content').html(message.text);
+    }else {  /* otherwise we dont' trust them. Actually, at this point, we should farm this out to another method. */
+      inserted_message.find('.content').text(message.text);
+    }
+    
+    /* always go find and scroll to the last message */
+    /* only do that if we have messages to scroll and only every quarter second (stop this if we're in keyboad navigation mode tho) */
+    /* TODO */
+    if ( $('#chat .message').size() ){
+      var n = $("#chat div.message:last").eq(0);
+      var z = $(window).scrollTop() - n.offset().top;
+      if (n && z){
+        $.throttle( 250, $.scrollTo(n, {offset: -z}) );
+      }
+    }
+    
+    messageArray[message.id] = message;
+    
+    checkForTooManyMessages();
+  }
+  
+  function checkForTooManyMessages(){
+      /* TODO */
+    /* 100 is fine for now, but we need to keep track of how many messages we've requested from the server and trim them after some time to match */
+    if ($('.messagebox').size() > 100){
+      var id = $('.messagebox:first').find('.message').attr('id').split('-')[1];
+      $('.messagebox:first').remove();
+      delete messageArray[id];
+      /* do it again since it will abort with less than or equal to 100 */
+      checkForTooManyMessages();
+    }
+  }
+  
 </script>
 
 <script>
@@ -302,89 +401,6 @@ window.onload = function() {
       /* this can only be called once a message has been emitted from the server */
       userArray[message.owner_id] = user; /* here we update the user */
       renderMessage(message);
-    }
-
-    function renderMessage(message) {
-      /* get the user so we can have their details */
-      var user = userArray[message.owner_id];
-      
-      /* if we didn't have a user, let's get one and try this again */
-      if (!user) {
-        socket.emit("request:user", message.owner_id, function(user) {
-          reRenderUserMessage(user, message);
-        });
-        return;
-      }
-      
-      if (message.type !== "message") { 
-        /* we need to handle other message types differently here */
-        /* TODO */
-        return; 
-      }
-      
-      var data = {};
-      data.name = user.name;
-      data.userid = user.id;
-      data.gravatar_hash = user.gravatar_hash;
-      data.isUser = (userId === message.owner_id) ? 1 : 0;
-      
-      data.id = message.id;
-      data.userid = message.owner_id;
-      data.deleted = message.deleted;
-      data.content = (data.deleted) ? '<i>Deleted</i>' : /* if data.deleted is null or falsy, show the text, else show deleted.*/
-                      (data.isRendered) ? message.text : /* if we already parsed and rendered it on the server, excellent, let's use that */
-                      escape(message.text); /* otherwise we dont' trust them. Actually, at this point, we should farm this out to another method. */
-                      /* TODO */
-      data.starred = message.starred.length;
-      data.flagged = message.flagged.length;
-      data.timestamp = message.timestamp;
-      data.timedisplay = new Date(data.timestamp).toLocaleTimeString();
-      data.history = message.history;
-      
-      //if the message doesn't exist yet in the local array
-      var previousMessage = $('#message-'+message.id).parents('.messagebox');
-      if (!previousMessage.size()){
-      
-        /* since we need to now insert this into the page somewhere, we need to find the best place to put it */
-        
-        /* this is the naive way */
-        //push the data into the template on the page
-        //$.tmpl( messagebox, data ).appendTo( '#chat' );
-        
-        previousMessage = $('#chat');
-        var previousid = 0;
-        for (var k in messageArray){ var m = messageArray[k];
-          if (parseInt(m.id) > parseInt(previousid) && parseInt(m.id) < parseInt(message.id)){
-            previousid = m.id;
-          }
-        }
-        if (previousid){ previousMessage = $('#message-'+previousid).parents('.messagebox');}
-        $.tmpl( messagebox, data ).after( previousMessage );
-      } else {
-        /* just remove the previous message and replace it with the new one */        
-        $.tmpl( messagebox, data ).after( previousMessage );
-        previousMessage.remove();
-      }
-      
-      /* always go find and scroll to the last message */
-      var n = $("#chat div.message:last").eq(0), z = $(window).scrollTop() - n.offset().top;
-      $.scrollTo(n, {offset: -z});
-      
-      messageArray[message.id] = message;
-      
-      checkForTooManyMessages();
-    }
-    
-    function checkForTooManyMessages(){
-        /* TODO */
-      /* 100 is fine for now, but we need to keep track of how many messages we've requested from the server and trim them after some time to match */
-      if ($('.messagebox').size() > 100){
-        var id = $('.messagebox:first').find('.message').attr('id').split('-')[1];
-        $('.messagebox:first').remove();
-        delete messageArray[id];
-        /* do it again since it will abort with less than or equal to 100 */
-        checkForTooManyMessages();
-      }
     }
     
     function removeMessage(id){

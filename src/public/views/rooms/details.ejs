@@ -3,7 +3,16 @@
 <div class="spacer">
 </div>
 <div class="viewHeader">
-<h2> room details page </h2>
+  <span class="viewTitle">Room Details Page</span>
+  <div class="tabs right">
+    <% if (categories) { %>
+      <% for(var i = 0; i < categories.length; i++){ %>
+        <a href="/rooms/?category=<%= categories[i] %>" <% if(i===0){ class="active" } %> ><%= categories[i] %></a>
+      <% } %>
+    <% } %>
+  </div>
+</div>
+
 <div id="room-container">
     <p>
         name : <span id="room-name"> <%= room.name %> </span>
@@ -18,7 +27,6 @@
     <p>
         description: <span id="room-description"><%=room.description%></span>
     </p>
-</div>
 </div>
 
 <% if (user && user.id === owner.id) { %>
