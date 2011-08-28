@@ -58,11 +58,13 @@ module.exports = function _route(app, model, io) {
                 if (socket.timeout + 500 < Date.now()) {
                     socket.timeout = Date.now();
 
-                    Message.create({
+                    var data = {
                         owner_id: user.id,
                         text: data.text,
-                        room: data.room
-                    }, function(err, id) {
+                        room: data.room.toString()
+                    };
+
+                    Message.create(data, function(err, id) {
                         Message.get(id, function(err, res) {
                             var room = getRoom(res.room);
                             room.emit("newMessage", res);
