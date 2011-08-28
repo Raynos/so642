@@ -1,6 +1,7 @@
 var everyauth = require("everyauth"),
     rest = require("../../node_modules/everyauth/lib/restler.js"),
     url = require("url"),
+    uuid = require("node-uuid"),
     users = require("../model/users.js"),
     crypto = require("crypto");
 
@@ -78,6 +79,13 @@ function createGoogle() {
 
 }
 
+function createHash(salt, password) {
+    var sha = crypto.createHash("sha1");
+    sha.update(password);
+    sha.update(salt);
+    return sha.digest("hex");
+}
+
 module.exports = function(app) {
   everyauth.debug = true;
 
@@ -107,11 +115,12 @@ module.exports = function(app) {
                             p.fulfill(res);
                         });
                     });  
-                } else {
+                } else if (user) {
                     var obj = user[0].value;
                     obj.id = user[0].id.split(":")[1];
                     p.fulfill(obj);
                 }
+                p.fulfill(['error']);
             });
             return p;
     })
@@ -144,15 +153,101 @@ module.exports = function(app) {
                             p.fulfill(res);
                         });
                     });  
-                } else {
+                } else if (user) {
                     var obj = user[0].value;
                     obj.id = user[0].id.split(":")[1];
                     p.fulfill(obj);
                 }
+                p.fulfill(['error']);
             });
             return p;
         })
         .redirectPath('/');
+
+    everyauth
+      .password
+        .loginWith('email')
+        .getLoginPath('/login')
+        .postLoginPath('/login')
+        .loginView('auth/login.ejs')
+        .authenticate( function (login, password) {
+          var errors = [];
+          if (!login) errors.push('Missing login');
+          if (!password) errors.push('Missing password');
+          if (errors.length) return errors;
+          var promise = this.Promise();
+          User.getUserByEmail(login, function(err, users) {
+              var user = users[0].value;
+              user.id = users[0].id.split(":")[1];
+              if (user.salt) {
+                  var hash = createHash(user.salt, password);
+                  if (hash === user.password_hash) {
+                      promise.fulfill(user);  
+                  } else {
+                      promise.fulfill(['Login failed']);  
+                  }
+              } else {
+                  promise.fulfill(['Login failed']);
+              }
+          });
+          return promise;
+        })
+
+        .getRegisterPath('/register')
+        .postRegisterPath('/register')
+        .registerView('auth/register.ejs')
+        .extractExtraRegistrationParams(function(req) {
+            return {
+                username: req.body.username
+            };
+        })
+        .validateRegistration( function (user, errors) {
+          var errors = [];
+          if (!user.email) errors.push('Missing login');
+          if (!user.password) errors.push('Missing password');
+          if (!user.username) errors.push('Missing name');
+          if (errors.length) return errors;
+          var email = user.login;
+          var promise = this.Promise();
+          User.getUserByEmail(email, function(err, users) {
+              if (users && users.length > 0) {
+                  promise.fulfill(['Login already taken']);
+              }
+              promise.fulfill([]);
+          });
+          return promise;
+        })
+        
+        .registerUser( function (user) {
+          var salt = new Buffer(uuid()).toHex();
+          var hash = createHash(salt, user.password);
+          var promise = this.Promise();
+          var obj = {
+              name: user.username,
+              email: user.email,
+              password_hash: hash,
+              salt: salt
+          };
+
+          User.create(obj, function(err, id) {
+              console.log(id);
+              if (err) {
+                  return promise.fulfill([err]);
+              }
+              User.getR(id, function(err, user) {
+                  console.log(user);
+                  if (err) {
+                      return promise.fulfill([err]);
+                  }
+                  promise.fulfill(user);
+              });
+          });
+          
+          return promise;
+        })
+
+        .loginSuccessRedirect('/')
+        .registerSuccessRedirect('/login');
 
 
     everyauth.helpExpress(app);
