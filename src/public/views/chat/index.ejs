@@ -91,6 +91,7 @@
 <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
 <script src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
 <script src="/js/jquery.scrollTo-1.4.2-min.js"></script>
+<script src="/js/jquery.debounce.js"></script>
 
 <!-- this is where the magic happens people -->
 <script src='/socket.io/socket.io.js'></script>
@@ -324,12 +325,18 @@
       }
       if (previousid){ previousMessage = $('#message-'+previousid).parents('.messagebox');}
       inserted_message = $.tmpl( messagebox, data );
-      inserted_message.after( previousMessage );
+      if (previousMessage.attr('id') === 'chat'){
+        previousMessage.append(inserted_message);
+      } else {
+        inserted_message.after( previousMessage );
+      }
     } else {
       /* just remove the previous message and replace it with the new one */
       inserted_message = $.tmpl( messagebox, data );
       inserted_message.after( previousMessage );
-      previousMessage.remove();
+      if (previousMessage.attr('id') !== 'chat'){
+        previousMessage.remove();
+      }
     }
     
     /* TODO */
@@ -348,7 +355,9 @@
       var n = $("#chat div.message:last").eq(0);
       var z = $(window).scrollTop() - n.offset().top;
       if (n && z){
-        $.throttle( 250, $.scrollTo(n, {offset: -z}) );
+        $.throttle( 250, function() {
+          $.scrollTo(n, {offset: -z}) 
+        });
       }
     }
     
@@ -379,6 +388,7 @@
 
 <script>
 window.onload = function() {
+    console.log($("#chat"));
     window.socket = io.connect();
 
     function addUser(user, inRoom) {
