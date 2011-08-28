@@ -25,9 +25,11 @@
     <p>
         name: <span id="person-name"><%= person.name %></span> 
     </p>
+    <% if (user && user.id === person.id) { %>
     <p>
         email: <span id="person-email"><%= person.email %></span>
     </p>
+    <% } %>
     <p>
         website: <span id="person-website"><%= person.website %></span>
     </p>
@@ -53,7 +55,6 @@
 
             [
                 "person-name", 
-                "person-email", 
                 "person-website", 
                 "person-introduction"
             ].forEach(function(id) {
@@ -72,8 +73,7 @@
             var data = {};
 
             [
-                "person-name", 
-                "person-email", 
+                "person-name",  
                 "person-website", 
                 "person-introduction"
             ].forEach(function(id) {
@@ -95,9 +95,12 @@
         function updateInputs(data) {
             for (var k in data) {
                 var id = "person-" + k;
-                var el = document.getElementById(id);
-                if (el) {
-                    el.value = data[k];
+                var span = document.createElement("span");
+                span.id = id;
+                var input = document.getElementById(id);
+                if (input) {
+                    span.textContent = data[k];
+                    input.parentNode.replaceChild(span, input)
                 }
             }
             if (data.gravatar_hash){
