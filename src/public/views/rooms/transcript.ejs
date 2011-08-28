@@ -35,7 +35,7 @@
     <div class="messages">
       <div id="message-<%= message.id %>" class="message">
         <div class="timestamp"><%= message.id %> <%= message.timedisplay%></div>
-        <a class="action-link" href="/users<%= user.id%>"></a>
+        <a class="action-link" href="/users/<%= user.id%>"></a>
         <div class="meta"></div>
         <span class="content"><%= message.text %></span>
         <div class="flash"></div>
