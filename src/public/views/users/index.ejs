@@ -1,4 +1,18 @@
-<h2> users index </h2>
+<div class="spacer">
+</div>
+<div class="spacer">
+</div>
+<div class="viewHeader">
+  <span class="viewTitle">List of users on the server</span>
+  <div class="tabs right">
+    <% if (categories) { %>
+      <% for(var i = 0; i < categories.length; i++){ %>
+        <a href="/rooms/?category=<%= categories[i] %>" <% if(i===0){ class="active" } %> ><%= categories[i] %></a>
+      <% } %>
+    <% } %>
+  </div>
+</div>
+
 <% for (var user in users) { %>
     <div>
         <a href="<%=users[user].userLink%>">  

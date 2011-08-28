@@ -1,4 +1,18 @@
-<h2> room transcript page </h2>
+<div class="spacer">
+</div>
+<div class="spacer">
+</div>
+<div class="viewHeader">
+  <span class="viewTitle">Room transcript page - work in progress</span>
+  <div class="tabs right">
+    <% if (categories) { %>
+      <% for(var i = 0; i < categories.length; i++){ %>
+        <a href="/rooms/?category=<%= categories[i] %>" <% if(i===0){ class="active" } %> ><%= categories[i] %></a>
+      <% } %>
+    <% } %>
+  </div>
+</div>
+
 <% for (var i = 0, ii = messages.length; i < ii; i++) { 
     var message = messages[i]; %>
 <div>
