@@ -1,0 +1,28 @@
+<% if ('undefined' !== typeof errors && errors.length) {%>
+  <ul id="errors">
+    <% for (var k in errors) { var error = errors[k]; %>
+      <li class="error"> <%=error%> </li>
+    <% } %>
+  </ul>
+<% } %>
+
+<form action="/login" method="post">
+  <div id="login">
+    <label for="<%=everyauth.password.loginFormFieldName%>">
+      Login
+    </label>
+    <input name="<%=everyauth.password.loginFormFieldName%>" 
+           placeholder="email@email.com"
+           type="email"/>
+  </div>
+  <div id="password">
+    <label for="<%=everyauth.password.passwordFormFieldName%>">
+      Password
+    </label>
+    <input type="password" 
+           name="<%=everyauth.password.passwordFormFieldName%>" />
+  </div>
+  <div id="submit">
+    <input type="submit" value="Login" />
+  </div>
+</form>

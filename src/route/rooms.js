@@ -45,10 +45,7 @@ module.exports = function _route(app, model, io) {
                             date += (time.getYear() + 1900) + "-";
                             date += (time.getMonth() + 1) + "-"
                             date += (time.getDate());
-                            console.log(date);
-                            console.log(id);
                             Message.getMessagesByDay(id, date, function(err, rows) {
-                                console.log(rows);
                                 room.total_messages_24hours = rows.length;
                                 room.id = id;
                                 room.roomLink = '/chat/' + room.id + 

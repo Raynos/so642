@@ -67,6 +67,7 @@ module.exports = function _route(app, model, io) {
                     Message.create(data, function(err, id) {
                         Message.get(id, function(err, res) {
                             var room = getRoom(res.room);
+                            res.id = id;
                             room.emit("newMessage", res);
                         });
                     });

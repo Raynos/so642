@@ -5,7 +5,7 @@
 <div class="viewHeader">
   <span class="viewTitle"><%= person.name %></span>
   <div class="tabs right">
-    <% if (categories) { %>
+    <% if (typeof categories !== "undefined") { %>
       <% for(var i = 0; i < categories.length; i++){ %>
         <a href="/rooms/?category=<%= categories[i] %>" <% if(i===0){ class="active" } %> ><%= categories[i] %></a>
       <% } %>
