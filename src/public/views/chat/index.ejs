@@ -91,6 +91,7 @@
 <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
 <script src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
 <script src="/js/jquery.scrollTo-1.4.2-min.js"></script>
+<script src="/js/jquery.debounce.js"></script>
 
 <!-- this is where the magic happens people -->
 <script src='/socket.io/socket.io.js'></script>
@@ -106,7 +107,7 @@
         <div class="timestamp">${id} ${timedisplay}</div>
         <a class="action-link" href="/users/${userid}"></a>
         <div class="meta"></div>
-        <span class="content">${content}</span>
+        <span class="content"></span>
         <div class="flash"></div>
       </div>
     </div>
@@ -289,7 +290,7 @@
       /* TODO */
       return; 
     }
-    
+
     var data = {};
     data.name = user.name;
     data.userid = user.id;
@@ -324,12 +325,18 @@
       }
       if (previousid){ previousMessage = $('#message-'+previousid).parents('.messagebox');}
       inserted_message = $.tmpl( messagebox, data );
-      inserted_message.after( previousMessage );
+      if (previousMessage.attr('id') === 'chat'){
+        previousMessage.append(inserted_message);
+      } else {
+        inserted_message.after( previousMessage );
+      }
     } else {
-      /* just remove the previous message and replace it with the new one */        
+      /* just remove the previous message and replace it with the new one */
       inserted_message = $.tmpl( messagebox, data );
       inserted_message.after( previousMessage );
-      previousMessage.remove();
+      if (previousMessage.attr('id') !== 'chat'){
+        previousMessage.remove();
+      }
     }
     
     /* TODO */
@@ -348,7 +355,9 @@
       var n = $("#chat div.message:last").eq(0);
       var z = $(window).scrollTop() - n.offset().top;
       if (n && z){
-        $.throttle( 250, $.scrollTo(n, {offset: -z}) );
+        $.throttle( 250, function() {
+          $.scrollTo(n, {offset: -z}) 
+        });
       }
     }
     
@@ -368,11 +377,18 @@
       checkForTooManyMessages();
     }
   }
+
+  function reRenderUserMessage(user, message) {
+    /* this can only be called once a message has been emitted from the server */
+    userArray[message.owner_id] = user; /* here we update the user */
+    renderMessage(message);
+  }
   
 </script>
 
 <script>
 window.onload = function() {
+    console.log($("#chat"));
     window.socket = io.connect();
 
     function addUser(user, inRoom) {
@@ -395,12 +411,6 @@ window.onload = function() {
     
     function removeUserImage(id) {
       $('#userList user-' + id).remove();   
-    }
-    
-    function reRenderUserMessage(user, message) {
-      /* this can only be called once a message has been emitted from the server */
-      userArray[message.owner_id] = user; /* here we update the user */
-      renderMessage(message);
     }
     
     function removeMessage(id){
