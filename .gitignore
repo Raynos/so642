@@ -1,3 +1,4 @@
 node_modules
 *.gz
 src/public/css/site.css
+src/public/css/chat.css

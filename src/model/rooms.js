@@ -109,6 +109,25 @@ RoomModel.prototype.update = function(roomID, obj, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) getDeletedRange
+
+  + roomID
+  + callback - err or array of deleted room IDs
+  - void
+  
+  Get range of deleted rooms.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.getDeletedRange = function(startIndex, endIndex, callback) {
+    this._redisClient.lrange("rooms:deleted", startIndex, endIndex, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
   (public) delete
 
   + roomID
@@ -158,6 +177,25 @@ RoomModel.prototype.undelete = function(roomID, callback) {
                     callback(undefined, res2);
                 }
             });
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) getFrozenRange
+
+  + roomID
+  + callback - err or array of frozen room IDs
+  - void
+  
+  Get range of frozen rooms.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.getFrozenRange = function(startIndex, endIndex, callback) {
+    this._redisClient.lrange("rooms:frozen", startIndex, endIndex, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
         }
     });
 };
