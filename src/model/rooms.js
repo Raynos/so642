@@ -73,6 +73,34 @@ RoomModel.prototype.create = function(userID, obj, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) update
+
+  + roomID
+  + obj
+  + callback - err or native response
+  - void
+  
+  Creates new room.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.update = function(roomID, obj, callback) {
+    this._redisClient.hmset("room:" + roomID,
+        {
+            name: obj.name,
+            description: obj.description,
+            state: obj.state,
+            type: obj.type
+        },
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }    
+    );
+};
+
+/*------------------------------------------------------------------------------
   (public) get
 
   + roomID

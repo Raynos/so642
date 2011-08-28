@@ -11,13 +11,16 @@ var messageModel = new MessageModel();
 /* userModel */
 //getUserByGithub(3);
 
+
+/* roomModel */
+updateRoom(1, {name: "tesssttt", description: "desc x", state: 0, type: 0});
+
 //getCurrentUsersTotal(1);
 
 //setUserEver(2, 1);
 //getUsersEverTotal(1);
 //getUsersEver(1);
 
-/* roomModel*/
 //incrementMessageCount(1, 5);
 //getMessageCount(1);
 
@@ -233,9 +236,24 @@ var userID = 3;
 
 /*------------------------------------------------------------------------------
 
+  update room
+
+------------------------------------------------------------------------------*/
+function updateRoom(roomID, obj) {
+    roomModel.update(roomID, obj, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
   setCurrentUser
 
-  ------------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 function getCurrentUsersTotal(roomID) {
     roomModel.getCurrentUsersTotal(roomID, function(err, res) {
         if(err) {
@@ -295,7 +313,7 @@ function setUserEver(userID, roomID) {
 
   getMessageCount
 
-  ------------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 function getMessageCount(roomID) {
     roomModel.getMessageCount(roomID, function(err, res) {
         if(err) {
@@ -310,7 +328,7 @@ function getMessageCount(roomID) {
 
   incrementMessageCount
 
-  ------------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 function incrementMessageCount(roomID, lastMessageID) {
     roomModel.incrementMessageCount(roomID, lastMessageID, function(err, res) {
         if(err) {
