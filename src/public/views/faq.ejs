@@ -5,11 +5,6 @@
 <div class="viewHeader">
   <span class="viewTitle">FAQ - Frequently Asked Questions</span>
   <div class="tabs right">
-    <% if (categories) { %>
-      <% for(var i = 0; i < categories.length; i++){ %>
-        <a href="/rooms/?category=<%= categories[i] %>" <% if(i===0){ class="active" } %> ><%= categories[i] %></a>
-      <% } %>
-    <% } %>
   </div>
 </div>
 
