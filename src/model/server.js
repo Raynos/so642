@@ -33,10 +33,12 @@ var messageModel = new MessageModel();
 //incrementMessageCount(1, 5);
 //getMessageCount(1);
 
+getHistogram(1);
+
 /*------------------------------------------------------------------------------
   MessageModel
 ------------------------------------------------------------------------------*/
-//createMessage({owner_id: 3,text: "test message number asdf",room: 2});
+//createMessage({owner_id: 1,text: "test message number asdf",room: 1});
 
 //getMessageRange(3, 12, 14);
 //getMessagesByDay(6, "2011-8-27");
@@ -401,24 +403,33 @@ function getMessageCount(roomID) {
 
 /*------------------------------------------------------------------------------
 
-  incrementMessageCount
+  getHistogram
 
 ------------------------------------------------------------------------------*/
-function incrementMessageCount(roomID, lastMessageID) {
-    roomModel.incrementMessageCount(roomID, lastMessageID, function(err, res) {
+function getHistogram(roomID) {
+    roomModel.getHistogram(roomID, function(err, res) {
         if(err) {
             util.log(err);
         } else {
-            util.log(res);
+            /*util.log(JSON.stringify(res));
+            var str = "";
+            for(var item in res) {
+                str += res[item] + " ";
+            }
+            util.log(str);*/
+            
+            util.log(JSON.stringify(res));
         }
     });
 }
 
 /*------------------------------------------------------------------------------
 
-  create messages
+  MESSAGES
 
-  ------------------------------------------------------------------------------*/
+  create Message
+
+------------------------------------------------------------------------------*/
 function createMessage(obj) {
     messageModel.create(
         obj,
