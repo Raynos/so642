@@ -44,6 +44,8 @@ module.exports = function _route(app, model, io) {
                 "messages": rows.map(function(v) {
                     v.id = v._id.split(":")[1]
                     return v; 
+                }).sort(function(a, b) {
+                    return a.id < b.id;
                 })
             });     
         });
