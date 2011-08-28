@@ -1,4 +1,82 @@
 <h2> view user </h2>
-<div>
-    name: <%= person.name %>
+<div id="user-container">
+    <p>
+        name: <span id="person-name"><%= person.name %></span> 
+    </p>
+    <p>
+        email: <span id="person-email"><%= person.email %></span>
+    </p>
+    <p>
+        website: <span id="person-website"><%= person.website %></span>
+    </p>
+    <p>
+        introduction: <span id="person-introduction"><%= person.introduction %></span>
+    </p>
 </div>
+
+<% if (user && user.id === person.id) { %>
+
+    <button id="person-edit"> Edit </button>
+    <button disabled id="person-save"> Save </button>
+
+    <script>
+        var edit = document.getElementById("person-edit");
+        var save = document.getElementById("person-save");
+        
+        edit.addEventListener("click", function() {
+            save.disabled = false;
+
+            [
+                "person-name", 
+                "person-email", 
+                "person-website", 
+                "person-introduction"
+            ].forEach(function(id) {
+                var el = document.getElementById(id);
+                var input = document.createElement("input");
+                input.id = id;
+                input.value = el.textContent;
+                el.parentNode.replaceChild(input, el); 
+            });
+
+        }, false);
+
+        save.addEventListener("click", function() {
+            var userId = location.pathname.split("/")[2];
+
+            var data = {};
+
+            [
+                "person-name", 
+                "person-email", 
+                "person-website", 
+                "person-introduction"
+            ].forEach(function(id) {
+                var el = document.getElementById(id);
+                data[id.substr(7)] = el.value;
+            });
+
+            $.ajax({
+                type: "PUT",
+                url: "/users/" + userId,
+                data: data,
+                success: function (data, status, xhr) {
+                  updateInputs(data);
+                }
+            });
+
+        }, false);
+
+        function updateInputs(data) {
+            for (var k in data) {
+                var id = "person-" + k;
+                var el = document.getElementById(id);
+                if (el) {
+                    el.value = data[k];
+                }
+            }
+        }
+
+    </script>
+
+<% } %>
