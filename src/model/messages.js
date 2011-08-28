@@ -67,6 +67,18 @@ MessageModel.prototype.create = function(obj, callback) {
                     if(err2) {
                         callback(err2, undefined);
                     } else {
+                        self._redisClient.hincrby(
+                            "room:" + obj.room, 
+                            "total_messages", 
+                            1
+                        );
+                        
+                        self._redisClient.hset(
+                            "room:" + obj.room, 
+                            "last_message", 
+                            "message:" + messageID
+                        );
+                        
                         callback(undefined, messageID);
                     }
                 }
