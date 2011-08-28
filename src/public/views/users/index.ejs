@@ -13,10 +13,11 @@
   </div>
 </div>
 
-<% for (var user in users) { %>
-    <div>
-        <a href="<%=users[user].userLink%>">  
-            <%= users[user].name %> 
+<% for (var k in users) { var user = users[k]; %>
+    <div class="left" style="width: 180px; max-width: 180px; height: 32px; max-height: 32px; overflow: hidden; padding: 5px;">
+        <a href="<%=user.userLink%>" style="color: #800000;">  
+          <img src="http://gravatar.com/avatar/<%= user.gravatar_hash %>" title="<%= user.name %>" style="max-width: 32px; max-height: 32px;">
+          <%= user.name %> 
         </a> 
     </div>
 <% } %>
