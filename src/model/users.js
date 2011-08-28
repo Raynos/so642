@@ -1,6 +1,6 @@
 var util = require("util"),
-	redis = require("redis"),
-	cradle = require("cradle");
+    redis = require("redis"),
+    cradle = require("cradle");
 
 /*------------------------------------------------------------------------------
   (public) UserModel
@@ -11,14 +11,14 @@ var util = require("util"),
   Set up model for users.
 ------------------------------------------------------------------------------*/
 var UserModel = module.exports = function UserModel() {
-	var couchCon = new(cradle.Connection)(
-		"173.230.137.226", 5984, 
-		{auth: { username: "cotoja", password: process.env.COUCH_PWD}}
-	);
-	this._couchClient = couchCon.database("stackchat");
-	
-	this._redisClient = redis.createClient(6379, "173.230.137.226");
-	this._redisClient.auth(process.env.REDIS_PWD, function() {});
+    var couchCon = new(cradle.Connection)(
+        "173.230.137.226", 5984, 
+        {auth: { username: "cotoja", password: process.env.COUCH_PWD}}
+    );
+    this._couchClient = couchCon.database("stackchat");
+    
+    this._redisClient = redis.createClient(6379, "173.230.137.226");
+    this._redisClient.auth(process.env.REDIS_PWD, function() {});
 };
 
 /*------------------------------------------------------------------------------
@@ -29,26 +29,27 @@ var UserModel = module.exports = function UserModel() {
   - void
   a
   Creates new user in CouchDB.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype._createCouchUser = function(userID, obj, callback) {
-	this._couchClient.save(
-		"user:" + userID.toString(), 
-		{
-			type: "user",
-			name: obj.name,
-			email: obj.email,
-			password_hash: obj.password_hash,
-			website: obj.website,
-			introduction: obj.introduction,
-			gravatar_hash: obj.gravatar_hash,
-			role: obj.role,
-			can_talk: obj.can_talk,
-			can_read: obj.can_read
-		},
-		function(err, res) {
-			callback(err, res);
-		}
-	);
+    this._couchClient.save(
+        "user:" + userID.toString(), 
+        {
+            type: "user",
+            name: obj.name,
+            email: obj.email,
+            password_hash: obj.password_hash,
+            website: obj.website,
+            introduction: obj.introduction,
+            gravatar_hash: obj.gravatar_hash,
+            github_id: obj.github_id,
+            role: obj.role,
+            can_talk: obj.can_talk,
+            can_read: obj.can_read
+        },
+        function(err, res) {
+            callback(err, res);
+        }
+    );
 };
 
 /*------------------------------------------------------------------------------
@@ -59,43 +60,44 @@ UserModel.prototype._createCouchUser = function(userID, obj, callback) {
   - void
   
   Creates new user in Redis.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype._createRedisUser = function(userID, obj, callback) {
-	var self = this,
-		date = new Date();
+    var self = this,
+        date = new Date();
 
-	self._redisClient.hmset("user:" + userID, 
-		{
-			name: obj.name,
-			email: obj.email,
-			password_hash: obj.password_hash,
-			website: obj.website,
-			introduction: obj.introduction,
-			gravatar_hash: obj.gravatar_hash,
-			last_seen: date.getTime(),
-			last_sent_message: null,
-			last_spoke_here: null, // this is only for use on the client, has no need on the server, per-se
-			total_messages_sent: 0, // can be decremented on deletes
-			total_flags_ever: 0,
-			banned: null, // may be null or falsy, indicates no ban active
-			role: obj.role,
-			can_talk: obj.can_talk,
-			can_read: obj.can_read
-		},
-		function(err, res) {
-			if(err) {
-				callback(err, undefined);
-			} else {
-				self._redisClient.lpush("users", "user:" + userID, function(err2, res2) {
-					if(err2) {
-						callback(err2, undefined);
-					} else {
-						callback(undefined, res2);
-					}
-				});
-			}
-		}
-	);
+    self._redisClient.hmset("user:" + userID, 
+        {
+            name: obj.name,
+            email: obj.email,
+            password_hash: obj.password_hash,
+            website: obj.website,
+            introduction: obj.introduction,
+            gravatar_hash: obj.gravatar_hash,
+            github_id: obj.github_id,
+            last_seen: date.getTime(),
+            last_sent_message: null,
+            last_spoke_here: null, // this is only for use on the client, has no need on the server, per-se
+            total_messages_sent: 0, // can be decremented on deletes
+            total_flags_ever: 0,
+            banned: null, // may be null or falsy, indicates no ban active
+            role: obj.role,
+            can_talk: obj.can_talk,
+            can_read: obj.can_read
+        },
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                self._redisClient.lpush("users", "user:" + userID, function(err2, res2) {
+                    if(err2) {
+                        callback(err2, undefined);
+                    } else {
+                        callback(undefined, res2);
+                    }
+                });
+            }
+        }
+    );
 };
 
 /*------------------------------------------------------------------------------
@@ -106,29 +108,29 @@ UserModel.prototype._createRedisUser = function(userID, obj, callback) {
   - void
   
   Creates new user.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype.create = function(obj, callback) {
-	var self = this;
-	
-	self._redisClient.hincrby("increment", "users", 1, function(err, userID) {
-		if(err) {
-			callback(err, undefined);
-		} else {
-			self._createCouchUser(userID, obj, function(err2, res2) {
-				if(err2) {
-					callback(err2, undefined);
-				} else {
-					self._createRedisUser(userID, obj, function(err3, res3) {
-						if(err3) {
-							callback(err3, undefined);
-						} else {
-							callback(undefined, userID);
-						}
-					});
-				}
-			});
-		}
-	});
+    var self = this;
+    
+    self._redisClient.hincrby("increment", "users", 1, function(err, userID) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            self._createCouchUser(userID, obj, function(err2, res2) {
+                if(err2) {
+                    callback(err2, undefined);
+                } else {
+                    self._createRedisUser(userID, obj, function(err3, res3) {
+                        if(err3) {
+                            callback(err3, undefined);
+                        } else {
+                            callback(undefined, userID);
+                        }
+                    });
+                }
+            });
+        }
+    });
 };
 
 /*------------------------------------------------------------------------------
@@ -139,15 +141,15 @@ UserModel.prototype.create = function(obj, callback) {
   - void
   
   Get specific user from CouchDB.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype.getC = function(userID, callback) {
-	this._couchClient.get("user:" + userID, function(err, doc) {
-		if(err) {
-			callback(err, undefined);
-		} else {
-			callback(undefined, doc);
-		}
-	});
+    this._couchClient.get("user:" + userID, function(err, doc) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, doc);
+        }
+    });
 };
 
 /*------------------------------------------------------------------------------
@@ -158,15 +160,15 @@ UserModel.prototype.getC = function(userID, callback) {
   - void
   
   Get specific user from Redis.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype.getR = function(userID, callback) {
-	this._redisClient.hgetall("user:" + userID, function(err, res) {
-		if(err) {
-			callback(err, undefined);
-		} else {
-			callback(undefined, res);
-		}
-	});
+    this._redisClient.hgetall("user:" + userID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
+        }
+    });
 };
 
 /*------------------------------------------------------------------------------
@@ -177,19 +179,42 @@ UserModel.prototype.getR = function(userID, callback) {
   - void
   
   Get specific user from Redis.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype.getUserByEmail = function(userEmail, callback) {
-	this._couchClient.view(
-		"views/userByEmail", 
-		{key: userEmail},
-		function(err, res) {
-			if(err) {
-				callback(err, undefined);
-			} else {
-				callback(undefined, res);
-			}
-		}
-	);
+    this._couchClient.view(
+        "views/userByEmail", 
+        {key: userEmail},
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
+};
+
+/*------------------------------------------------------------------------------
+  (public) getUserByGithub
+
+  + githubID
+  + callback - err or user doc
+  - void
+  
+  Get specific user from Redis.
+------------------------------------------------------------------------------*/    
+UserModel.prototype.getUserByGithub = function(githubID, callback) {
+    this._couchClient.view(
+        "views/getUserByGithub", 
+        {key: githubID},
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
 };
 
 /*------------------------------------------------------------------------------
@@ -201,15 +226,15 @@ UserModel.prototype.getUserByEmail = function(userEmail, callback) {
   - void
   
   Get specific range of users from Redis.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype.getRange = function(startIndex, endIndex, callback) {
-	this._redisClient.lrange("users", startIndex, endIndex, function(err, res) {
-		if(err) {
-			callback(err, undefined);
-		} else {
-			callback(undefined, res);
-		}
-	});
+    this._redisClient.lrange("users", startIndex, endIndex, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
+        }
+    });
 };
 
 /*------------------------------------------------------------------------------
@@ -219,15 +244,15 @@ UserModel.prototype.getRange = function(startIndex, endIndex, callback) {
   - void
   
   Get total number of users in Redis.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype.getTotalUsersCount = function(callback) {
-	this._redisClient.llen("users", function(err, res) {
-		if(err) {
-			callback(err, undefined);
-		} else {
-			callback(undefined, res);
-		}
-	});
+    this._redisClient.llen("users", function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
+        }
+    });
 };
 
 /*------------------------------------------------------------------------------
@@ -238,15 +263,15 @@ UserModel.prototype.getTotalUsersCount = function(callback) {
   - void
   
   Get total number of users in Redis.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype.getRoomsCurrentlyIn = function(userID, callback) {
-	this._redisClient.sismembers("user:" + userID + ":rooms_currently_in", function(err, res) {
-		if(err) {
-			callback(err, undefined);
-		} else {
-			callback(undefined, res);
-		}
-	});
+    this._redisClient.sismembers("user:" + userID + ":rooms_currently_in", function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
+        }
+    });
 };
 
 /*------------------------------------------------------------------------------
@@ -258,19 +283,19 @@ UserModel.prototype.getRoomsCurrentlyIn = function(userID, callback) {
   - void
   
   Set specific room to user set of rooms where he is currently in.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype.setRoomCurrentlyIn = function(userID, roomID, callback) {
-	this._redisClient.sadd(
-		"user:" + userID + ":rooms_currently_in",
-		"room:" + roomID,
-		function(err, res) {
-			if(err) {
-				callback(err, undefined);
-			} else {
-				callback(undefined, res);
-			}
-		}
-	);
+    this._redisClient.sadd(
+        "user:" + userID + ":rooms_currently_in",
+        "room:" + roomID,
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
 };
 
 /*------------------------------------------------------------------------------
@@ -282,17 +307,17 @@ UserModel.prototype.setRoomCurrentlyIn = function(userID, roomID, callback) {
   - void
   
   Removes specific room from a set of user rooms where he is currently in.
-------------------------------------------------------------------------------*/	
+------------------------------------------------------------------------------*/    
 UserModel.prototype.unsetRoomCurrentlyIn = function(userID, roomID, callback) {
-	this._redisClient.srem(
-		"user:" + userID + ":rooms_currently_in",
-		"room:" + roomID,
-		function(err, res) {
-			if(err) {
-				callback(err, undefined);
-			} else {
-				callback(undefined, res);
-			}
-		}
-	);
+    this._redisClient.srem(
+        "user:" + userID + ":rooms_currently_in",
+        "room:" + roomID,
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
 };
