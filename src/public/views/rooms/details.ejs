@@ -1,3 +1,8 @@
+<div class="spacer">
+</div>
+<div class="spacer">
+</div>
+<div class="viewHeader">
 <h2> room details page </h2>
 <div id="room-container">
     <p>
@@ -13,6 +18,7 @@
     <p>
         description: <span id="room-description"><%=room.description%></span>
     </p>
+</div>
 </div>
 
 <% if (user && user.id === owner.id) { %>
@@ -33,7 +39,7 @@
                 var el = document.getElementById(id);
                 var input = document.createElement("input");
                 input.id = id;
-                input.value = el.textContent;
+                input.value = el.textContent || el.value;
                 el.parentNode.replaceChild(input, el); 
             });
 

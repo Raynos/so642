@@ -573,7 +573,7 @@ RoomModel.prototype.getHistogram = function(roomID, callback) {
   - void
   
   Get room histogram from Redis.
-------------------------------------------------------------------------------*/    
+------------------------------------------------------------------------------*/
 RoomModel.prototype.decrementHistogram = function(roomID, bIndex, callback) {
     this._redisClient.hincrby(
         "room:" + roomID + ":histogram", 

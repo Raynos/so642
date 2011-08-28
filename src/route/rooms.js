@@ -34,17 +34,28 @@ module.exports = function _route(app, model, io) {
             });
             
             data.forEach(function(val) {
-                var id = val.split(":")[1]
+                var id = val.split(":")[1];
                 Room.get(id, function(err, room) {
                     Room.getUsersEverTotal(id, function(err, data) {
-                        console.log(data);
                         room.total_users_ever = data;
                         Room.getCurrentUsersTotal(id, function(err, data) {
                             room.total_users_now = data;
-                            room.id = id;
-                            room.roomLink = '/chat/' + room.id + 
-                                "/" + room.name.replace(/\s/g, "-");
-                            cb(room); 
+                            var time = new Date(Date.now());
+                            var date = "";
+                            date += (time.getYear() + 1900) + "-";
+                            date += (time.getMonth() + 1) + "-"
+                            date += (time.getDate());
+                            console.log(date);
+                            console.log(id);
+                            Message.getMessagesByDay(id, date, function(err, rows) {
+                                console.log(rows);
+                                room.total_messages_24hours = rows.length;
+                                room.id = id;
+                                room.roomLink = '/chat/' + room.id + 
+                                    "/" + room.name.replace(/\s/g, "-");
+                                cb(room);     
+                            });
+                            
                         });
                     });
                 });
@@ -71,7 +82,6 @@ module.exports = function _route(app, model, io) {
 
     app.get("/transcript/:roomId", function(req, res) {
         Message.getLatestMessages(req.params.roomId, 100, function(err, data) {
-            console.log(data);
             var cb = after(data.length, function() {
                 users = {};
                 for (var i = 0; i < arguments.length; i++) {

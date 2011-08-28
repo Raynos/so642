@@ -37,6 +37,7 @@ MessageModel.prototype.create = function(obj, callback) {
     obj.type = "message";
     obj.starred = [];
     obj.flagged = [];
+    obj.pinned_by = null;
     obj.timestamp = date.getTime(),
     obj.deleted = null; // null indicates not deleted
     obj.deletedBy = null; // indicates who deleted the message
@@ -99,6 +100,195 @@ MessageModel.prototype.create = function(obj, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) star
+
+  + messageID
+  + userID
+  + callback - err or native response
+  - void
+  
+  Star specific message in CouchDB.
+------------------------------------------------------------------------------*/    
+MessageModel.prototype.star = function(messageID, userID, callback) {
+    var self = this,
+        isPresent = false,
+        i, len;
+
+    self._couchClient.get("message:" + messageID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            for(i = 0, len = res.starred.length; i < len; i++) {
+                if(res.starred[i] === ("user:" + userID)) {
+                    isPresent = true;
+                }
+            }
+            
+            if(!isPresent) {
+                res.starred.push("user:" + userID);
+            
+                self._couchClient.merge(
+                    "message:" + messageID, 
+                    res, 
+                    function(err2, res2) {
+                        if(err2) {
+                            callback(err2, undefined);
+                        } else {
+                            callback(undefined, res2);
+                        }
+                    }
+                );
+            } else {
+                callback(undefined, "already starred");
+            }
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) unstar
+
+  + messageID
+  + userID
+  + callback - err or native response
+  - void
+  
+  Unstar specific message in CouchDB.
+------------------------------------------------------------------------------*/    
+MessageModel.prototype.unstar = function(messageID, userID, callback) {
+    var self = this,
+        isPresent = false,
+        index, i, len;
+
+    self._couchClient.get("message:" + messageID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            for(i = 0, len = res.starred.length; i < len; i++) {
+                if(res.starred[i] === ("user:" + userID)) {
+                    isPresent = true;
+                    index = i;
+                    break;
+                }
+            }
+            
+            if(isPresent) {
+                res.starred.splice(index, 1);
+            
+                self._couchClient.merge(
+                    "message:" + messageID, 
+                    res, 
+                    function(err2, res2) {
+                        if(err2) {
+                            callback(err2, undefined);
+                        } else {
+                            callback(undefined, res2);
+                        }
+                    }
+                );
+            } else {
+                callback(undefined, "not present");
+            }
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) flag
+
+  + messageID
+  + userID
+  + callback - err or native response
+  - void
+  
+  Flag specific message in CouchDB.
+------------------------------------------------------------------------------*/    
+MessageModel.prototype.flag = function(messageID, userID, callback) {
+    var self = this,
+        isPresent = false,
+        i, len;
+
+    self._couchClient.get("message:" + messageID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            for(i = 0, len = res.flagged.length; i < len; i++) {
+                if(res.flagged[i] === ("user:" + userID)) {
+                    isPresent = true;
+                    break;
+                }
+            }
+            
+            if(!isPresent) {
+                res.flagged.push("user:" + userID);
+            
+                self._couchClient.merge(
+                    "message:" + messageID, 
+                    res, 
+                    function(err2, res2) {
+                        if(err2) {
+                            callback(err2, undefined);
+                        } else {
+                            callback(undefined, res2);
+                        }
+                    }
+                );
+            } else {
+                callback(undefined, "already starred");
+            }
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) unflag
+
+  + messageID
+  + userID
+  + callback - err or native response
+  - void
+  
+  Unflag specific message in CouchDB.
+------------------------------------------------------------------------------*/    
+MessageModel.prototype.unflag = function(messageID, userID, callback) {
+    var self = this,
+        isPresent = false,
+        index, i, len;
+
+    self._couchClient.get("message:" + messageID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            for(i = 0, len = res.flagged.length; i < len; i++) {
+                if(res.flagged[i] === ("user:" + userID)) {
+                    isPresent = true;
+                    index = i;
+                    break;
+                }
+            }
+            
+            if(isPresent) {
+                res.flagged.splice(index, 1);
+            
+                self._couchClient.merge(
+                    "message:" + messageID, 
+                    res, 
+                    function(err2, res2) {
+                        if(err2) {
+                            callback(err2, undefined);
+                        } else {
+                            callback(undefined, res2);
+                        }
+                    }
+                );
+            } else {
+                callback(undefined, "not present");
+            }
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
   (public) get
 
   + messageID
@@ -130,7 +320,7 @@ MessageModel.prototype.get = function(messageID, callback) {
 MessageModel.prototype.getLatestMessages = function(roomID, count, callback) {
     this._couchClient.view(
         "views/getLatestMessages", 
-        {startkey: [roomID.toString(), {}], endkey: [roomID],descending: true,limit: count}, 
+        {startkey: [roomID.toString(), {}], endkey: [roomID.toString()],descending: true,limit: count}, 
         function(err, res) {
             if(err) {
                 callback(err, undefined);
