@@ -4,10 +4,13 @@ window.onload = function() {
 
     var userArray = {};
 
-    function addUser(user) {
+    function addUser(user, inRoom) {
+        console.log(user);
         if (!userArray[user.id]) {
             userArray[user.id] = user; 
-            renderUserImage(user);       
+            if (inRoom) {
+                renderUserImage(user);           
+            }
         }
     };
 
@@ -58,7 +61,7 @@ window.onload = function() {
         if (user) {
             renderUserMessage(user, data);
         } else {
-            users.emit("request:user", data.owner_id, function(user) {
+            socket.emit("request:user", data.owner_id, function(user) {
                 renderUserMessage(user, data);
             });
         }
@@ -104,17 +107,21 @@ window.onload = function() {
     createUI();
 
     socket.on("userJoined", function(user) {
-        addUser(user.userData);
+        addUser(user.userData, true);
     });
 
     socket.on("userLeft", function(user) {
         removeUser(user.userId);  
     });
 
-    socket.on("provide:user", addUser);
+    socket.on("provide:user", function(user) {
+        addUser(user, false)
+    });
 
     socket.on("provide:usersInRoom", function(users) {
-        users.forEach(addUser);
+        users.forEach(function(user) {
+            addUser(user, true)
+        });
     })
 
     var roomId = location.pathname.split("/")[2];
