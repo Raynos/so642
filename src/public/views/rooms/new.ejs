@@ -1,1 +1,73 @@
-<h2> new room form </h2>
+<div class="spacer">
+</div>
+<div class="spacer">
+</div>
+<div class="viewHeader">
+  <span class="viewTitle">Create a new room</span>
+  <div class="tabs right">
+    <% if (categories) { %>
+      <% for(var i = 0; i < categories.length; i++){ %>
+        <a href="/rooms/?category=<%= categories[i] %>" <% if(i===0){ class="active" } %> ><%= categories[i] %></a>
+      <% } %>
+    <% } %>
+  </div>
+</div>
+
+<div id="room-container">
+    <p>name : <span id="room-name"> <%= room.name %> </span></p>
+
+    <p>
+        owner : <a href="<%= owner.userLink %>"> 
+            <span id="room-created_by"> <%= owner.name %> </span> 
+        </a>
+    </p>
+
+    <p>
+        description: <span id="room-description"><%=room.description%></span>
+    </p>
+</div>
+
+<% if (user && user.id === owner.id) { %>
+
+    <button id="room-edit"> Edit </button>
+    <button disabled id="room-save"> Save </button>
+
+    <script>
+        var edit = document.getElementById("room-edit");
+        var save = document.getElementById("room-save");
+
+        var roomId = location.pathname.split("/")[2];
+        
+        edit.addEventListener("click", function() {
+            save.disabled = false;
+
+            ["room-name", "room-description"].forEach(function(id) {
+                var el = document.getElementById(id);
+                var input = document.createElement("input");
+                input.id = id;
+                input.value = el.textContent;
+                el.parentNode.replaceChild(input, el); 
+            });
+
+        }, false);
+
+        save.addEventListener("click", function() {
+            var userId = location.pathname.split("/")[2];
+
+            var data = {};
+
+            ["room-name", "room-description"].forEach(function(id) {
+                var el = document.getElementById(id);
+                data[id.substr(5)] = el.value;
+            });
+
+            $.ajax({
+                type: "PUT",
+                url: "/rooms/" + roomId,
+                data: data
+            });
+
+        }, false);
+    </script>
+
+<% } %>
