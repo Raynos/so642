@@ -102,6 +102,7 @@ module.exports = function _route(app, model, io) {
 
             socket.on("request:user", function(userId, cb) {
                 User.getR(userId, function(err, user) {
+                    user.id = userId;
                     socket.emit("provide:user", user);
                     if (cb) {
                         cb(user);
@@ -147,13 +148,15 @@ function getRoom(id) {
 function provideUsersInRoom(socket, room) {
     Room.getCurrentUsers(room, function(err, res) {
         var cb = after(res.length, function() {
-            if (arguments.length > 0) {
-                socket.emit("provide:usersInRoom", arguments);
+            if (arguments.length > 0 && arguments[0]) {
+                var arr = Array.prototype.slice.call(arguments);
+                socket.emit("provide:usersInRoom", arr);
             }
         });
         res.forEach(function(v) {
             var id = v.split(":")[1];
             User.getR(id, function(err, user) {
+                user.id = id;
                 cb(user);
             });
         })
