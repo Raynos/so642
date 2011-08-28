@@ -111,7 +111,8 @@ RoomModel.prototype.update = function(roomID, obj, callback) {
 /*------------------------------------------------------------------------------
   (public) getDeletedRange
 
-  + roomID
+  + startIndex
+  + endIndex
   + callback - err or array of deleted room IDs
   - void
   
@@ -184,7 +185,8 @@ RoomModel.prototype.undelete = function(roomID, callback) {
 /*------------------------------------------------------------------------------
   (public) getFrozenRange
 
-  + roomID
+  + startIndex
+  + endIndex
   + callback - err or array of frozen room IDs
   - void
   
