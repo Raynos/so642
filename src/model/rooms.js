@@ -163,6 +163,30 @@ RoomModel.prototype.setOwner = function(userID, roomID, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) unsetOwner
+
+  + userID
+  + roomID
+  + callback - err or native response
+  - void
+  
+  Remove userID from specific room as a room owner.
+------------------------------------------------------------------------------*/
+RoomModel.prototype.unsetOwner = function(userID, roomID, callback) {
+    this._redisClient.srem(
+        "room:" + roomID + ":owners", 
+        "user:" + userID,
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
+};
+
+/*------------------------------------------------------------------------------
   (public) getCurrentUsers
 
   + roomID

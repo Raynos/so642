@@ -21,6 +21,9 @@ var messageModel = new MessageModel();
 ------------------------------------------------------------------------------*/
 //updateRoom(1, {name: "tesssttt", description: "desc x", state: 0, type: 0});
 
+//setOwner(1, 1);
+//unsetOwner(1, 1);
+
 //getCurrentUsersTotal(1);
 
 //setUserEver(2, 1);
@@ -148,7 +151,7 @@ function getUserByGithub(githubID) {
   Create new room in Redis
 ------------------------------------------------------------------------------*/
 
-var userID = 3;
+//var userID = 3;
 
 // create new room - in callback we separately assign user as owner, current,
 // read and write access. In their callbacks we get these informations back 
@@ -277,6 +280,36 @@ var userID = 3;
 ------------------------------------------------------------------------------*/
 function updateRoom(roomID, obj) {
     roomModel.update(roomID, obj, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  setOwner
+
+------------------------------------------------------------------------------*/
+function setOwner(userID, roomID, obj) {
+    roomModel.setOwner(userID, roomID, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  unsetOwner
+
+------------------------------------------------------------------------------*/
+function unsetOwner(userID, roomID, obj) {
+    roomModel.unsetOwner(userID, roomID, function(err, res) {
         if(err) {
             util.log(err);
         } else {
