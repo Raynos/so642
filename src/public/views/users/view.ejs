@@ -23,9 +23,11 @@
     <p>
         name: <span id="person-name"><%= person.name %></span> 
     </p>
+    <% if (user && user.id === person.id) { %>
     <p>
         email: <span id="person-email"><%= person.email %></span>
     </p>
+    <% } %>
     <p>
         website: <span id="person-website"><%= person.website %></span>
     </p>
