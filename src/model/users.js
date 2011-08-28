@@ -134,6 +134,47 @@ UserModel.prototype.create = function(obj, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) updateC
+
+  + userID
+  + obj
+  + callback - err or native response
+  - void
+  
+  Update specific user in CouchDB.
+------------------------------------------------------------------------------*/    
+UserModel.prototype.updateC = function(userID, obj, callback) {
+    this._couchClient.merge("user:" + userID, obj, function(err, doc) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, doc);
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) updateR
+
+  + userID
+  + obj
+  + callback - err or native response
+  - void
+  
+  Update specific user in Redis.
+------------------------------------------------------------------------------*/    
+UserModel.prototype.updateR = function(userID, obj, callback) {
+    this._redisClient.hmset("user:" + userID, obj, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
+        }
+    });
+};
+
+
+/*------------------------------------------------------------------------------
   (public) getC
 
   + userID

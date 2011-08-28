@@ -8,12 +8,18 @@ var roomModel = new RoomModel();
 var messageModel = new MessageModel();
 
 
-/* userModel */
+/*------------------------------------------------------------------------------
+  UserModel
+------------------------------------------------------------------------------*/
 //getUserByGithub(3);
 
+//updateC(1, {name: "J. Cole Brand xxx", github_id: 111});
+//updateR(1, {name: "J. Cole Brand xxx", github_id: 111});
 
-/* roomModel */
-updateRoom(1, {name: "tesssttt", description: "desc x", state: 0, type: 0});
+/*------------------------------------------------------------------------------
+  RoomModel
+------------------------------------------------------------------------------*/
+//updateRoom(1, {name: "tesssttt", description: "desc x", state: 0, type: 0});
 
 //getCurrentUsersTotal(1);
 
@@ -92,6 +98,36 @@ userModel.getUserByEmail("johny1@bravo.com", function(err, res) {
         util.log("user: " + JSON.stringify(res));
     }
 });*/
+
+/*------------------------------------------------------------------------------
+
+  updateC
+
+------------------------------------------------------------------------------*/
+function updateC(userID, obj) {
+    userModel.updateC(userID, obj, function(err, res) {
+        if(err) {
+            util.log(JSON.stringify(err));
+        } else {
+            util.log(JSON.stringify(res));
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  updateR
+
+------------------------------------------------------------------------------*/
+function updateR(userID, obj) {
+    userModel.updateR(userID, obj, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
 
 /*------------------------------------------------------------------------------
 

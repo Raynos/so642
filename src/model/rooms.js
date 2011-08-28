@@ -80,7 +80,7 @@ RoomModel.prototype.create = function(userID, obj, callback) {
   + callback - err or native response
   - void
   
-  Creates new room.
+  Update existing room.
 ------------------------------------------------------------------------------*/    
 RoomModel.prototype.update = function(roomID, obj, callback) {
     this._redisClient.hmset("room:" + roomID,
