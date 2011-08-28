@@ -36,9 +36,11 @@ var messageModel = new MessageModel();
 //getHistogram(1);
 
 //deleteRoom(3);
+//getDeletedRange(0, -1);
 //undeleteRoom(3);
 
 //froze(3);
+//getFrozenRange(0, -1);
 //unfroze(3);
 
 /*------------------------------------------------------------------------------
@@ -318,6 +320,21 @@ function updateRoom(roomID, obj) {
 
 /*------------------------------------------------------------------------------
 
+  getDeletedRange
+
+------------------------------------------------------------------------------*/
+function getDeletedRange(start, end) {
+    roomModel.getDeletedRange(start, end, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
   delete room
 
 ------------------------------------------------------------------------------*/
@@ -338,6 +355,21 @@ function deleteRoom(roomID) {
 ------------------------------------------------------------------------------*/
 function undeleteRoom(roomID) {
     roomModel.undelete(roomID, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  getFrozenRange
+
+------------------------------------------------------------------------------*/
+function getFrozenRange(start, end) {
+    roomModel.getFrozenRange(start, end, function(err, res) {
         if(err) {
             util.log(err);
         } else {
