@@ -1,11 +1,9 @@
 window.onload = function() {
     var socket = io.connect();
-    console.log(socket);
 
     var userArray = {};
 
     function addUser(user, inRoom) {
-        console.log(user);
         if (!userArray[user.id]) {
             userArray[user.id] = user; 
             if (inRoom) {
@@ -19,10 +17,7 @@ window.onload = function() {
         removeUserImage(id);
     }
 
-    function renderUserMessage(user, data) {
-        var div = document.createElement("div");
-        div.dataset.messageId = data.id;
-
+    function renderMessage(div, data, user) {
         var img = document.createElement("img");
 
         img.src = "http://gravatar.com/avatar/" + user.gravatar_hash;
@@ -32,6 +27,19 @@ window.onload = function() {
 
         div.appendChild(img);
         div.appendChild(span);
+    }
+
+    function renderUserMessage(user, data) {
+        var div = document.createElement("div");
+        div.dataset.messageId = data.id;
+
+        if (user) {
+            renderMessage(div, data, user);
+        } else {
+            socket.emit("request:user", data.owner_id, function(user) {
+                renderMessage(div, data, user);
+            });
+        }
 
         main.insertBefore(div, input);
     }
@@ -58,13 +66,7 @@ window.onload = function() {
     function createDiv(data) {
         var user = userArray[data.owner_id];
 
-        if (user) {
-            renderUserMessage(user, data);
-        } else {
-            socket.emit("request:user", data.owner_id, function(user) {
-                renderUserMessage(user, data);
-            });
-        }
+        renderUserMessage(user, data);
     }
 
     var input = document.createElement("input");
@@ -97,7 +99,7 @@ window.onload = function() {
     });
 
     socket.on("provide:recentMessages", function(data) {
-        data.messages.forEach(createDiv);
+        data.messages.reverse().forEach(createDiv);
     });
 
     socket.on("spamError", function() {
