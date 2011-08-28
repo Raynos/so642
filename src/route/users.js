@@ -40,7 +40,6 @@ module.exports = function _route(app, model, io) {
     });
 
     app.put("/users/:userId", [beUser], function(req, res) {
-        console.log(req.params.userId, req.body);
         User.update(req.params.userId, req.body, function(err, user) {
             User.getR(user.id.split(":")[1], function(err, user) {
                 console.log("update", arguments);

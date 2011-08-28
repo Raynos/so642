@@ -13,6 +13,17 @@ module.exports = function _route(app, model, io) {
         }
     }
 
+    function beOwner(req, res, next) {
+        var roomId = req.params.roomId;
+        Room.get(roomId, function(err, room) {
+            if (room.created_by === req.user.id) {
+                next()
+            } else {
+                next(new Error("not allowed"));
+            }
+        })
+    }
+
     app.get("/rooms", function(req, res) {
         Room.getRange(0, -1, function(err, data) {
             var cb = after(data.length, function() {
@@ -39,7 +50,16 @@ module.exports = function _route(app, model, io) {
     });
 
     app.get("/rooms/:roomId", function(req, res) {
-        res.render("rooms/details");
+        Room.get(req.params.roomId, function(err, room) {
+            User.getR(room.created_by, function(err, user) {
+                user.id = room.created_by;
+                user.userLink = "/users/" + user.id + "/" + user.name;
+                res.render("rooms/details", {
+                    "room": room,
+                    "owner": user
+                });    
+            });
+        });
     });
 
     app.get("/transcript/:roomId", function(req, res) {
@@ -91,8 +111,10 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.put("/rooms/:roomId/:title?", function(req, res) {
-        res.redirect("/rooms/" + req.params.roomId);
+    app.put("/rooms/:roomId/:title?", [beOwner], function(req, res) {
+        Room.update(req.params.roomId, req.body, function(err, room) {
+            res.send(room);
+        });
     });
 
 };
