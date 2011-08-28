@@ -31,9 +31,11 @@ var UserModel = module.exports = function UserModel() {
   Creates new user in CouchDB.
 ------------------------------------------------------------------------------*/    
 UserModel.prototype._createCouchUser = function(userID, obj, callback) {
+    obj.type = "user";
+
     this._couchClient.save(
         "user:" + userID.toString(), 
-        {
+        /*{
             type: "user",
             name: obj.name,
             email: obj.email,
@@ -45,7 +47,8 @@ UserModel.prototype._createCouchUser = function(userID, obj, callback) {
             role: obj.role,
             can_talk: obj.can_talk,
             can_read: obj.can_read
-        },
+        },*/
+        obj,
         function(err, res) {
             callback(err, res);
         }
@@ -169,6 +172,27 @@ UserModel.prototype.updateR = function(userID, obj, callback) {
             callback(err, undefined);
         } else {
             callback(undefined, res);
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) update
+
+  + userID
+  + obj
+  + callback - err or native response
+  - void
+  
+  Update specific user in Redis and CouchDB.
+------------------------------------------------------------------------------*/    
+UserModel.prototype.update = function(userID, obj, callback) {
+    var self = this;
+    this.updateR(userID, obj, function(err, res) {
+        if (err) {
+            callback(err, undefined);
+        } else {
+            self.updateC(userID, obj, callback);
         }
     });
 };

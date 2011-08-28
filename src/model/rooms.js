@@ -35,12 +35,19 @@ RoomModel.prototype.create = function(userID, obj, callback) {
     var self = this,
         date = new Date();
     
+    obj.created = date.getTime();
+    obj.created_by = userID;
+    obj.total_messages = 0;
+    obj.total_messages_24hours = 0;
+    
     self._redisClient.hincrby("increment", "rooms", 1, function(err, roomID) {
+        obj.id = roomID;
         if(err) {
             callback(err, undefined);
         } else {
-            self._redisClient.hmset("room:" + roomID,
-                {
+            self._redisClient.hmset(
+                "room:" + roomID,
+                /*{
                     id: roomID,
                     name: obj.name,
                     description: obj.description,
@@ -49,11 +56,12 @@ RoomModel.prototype.create = function(userID, obj, callback) {
                     last_message: obj.last_message,
                     total_messages: 0,
                     total_messages_24hours: 0,
-                    //total_users_ever: 0,
-                    //total_users_now: 0,
+                    //total_users_ever: 0, - there is a set for that
+                    //total_users_now: 0, - there is a set for that
                     state: obj.state,
                     type: obj.type
-                },
+                },*/
+                obj,
                 function(err2, res2) {
                     if(err2) {
                         callback(err2, undefined);
@@ -244,18 +252,6 @@ RoomModel.prototype.setCurrentUser = function(userID, roomID, callback) {
             if(err) {
                 callback(err, undefined);
             } else {
-                /*self._redisClient.hincrby(
-                    "room:" + roomID,
-                    "total_users_ever",
-                    1,
-                    function(err2, res2) {
-                        if(err2) {
-                            callback(err2, undefined);
-                        } else {
-                            callback(undefined, res2);
-                        }
-                    }
-                );*/
                 callback(undefined, res);
             }
         }
@@ -544,39 +540,45 @@ RoomModel.prototype.getMessageCount = function(roomID, callback) {
 };
 
 /*------------------------------------------------------------------------------
-  (public) incrementMessageCount
+  (public) getHistogram
 
   + roomID
-  + lastMessageID
-  + callback - err or native response
+  + callback - err or histogram object
   - void
   
-  Increment total_messages value by 1 and inserts lastMessageID if it is not
-  undefined.
+  Get room histogram from Redis.
 ------------------------------------------------------------------------------*/    
-RoomModel.prototype.incrementMessageCount = function(roomID, lastMessageID, callback) {
-    var self = this;
-
-    self._redisClient.hincrby("room:" + roomID, "total_messages", 1, function(err, res) {
+RoomModel.prototype.getHistogram = function(roomID, callback) {
+    this._redisClient.hgetall("room:" + roomID + ":histogram",  function(err, res) {
         if(err) {
             callback(err, undefined);
         } else {
-            if(lastMessageID) {
-                self._redisClient.hset(
-                    "room:" + roomID, 
-                    "last_message", 
-                    "message:" + lastMessageID, 
-                    function(err2, res2) {
-                        if(err2) {
-                            callback(err2, undefined);
-                        } else {
-                            callback(undefined, res2);
-                        }
-                    }
-                );
+            callback(undefined, res);
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) decrementHistogram
+
+  + roomID
+  + bIndex
+  + callback - err or native response
+  - void
+  
+  Get room histogram from Redis.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.decrementHistogram = function(roomID, bIndex, callback) {
+    this._redisClient.hincrby(
+        "room:" + roomID + ":histogram", 
+        bIndex, 
+        -1,
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
             } else {
                 callback(undefined, res);
             }
         }
-    });
+    );
 };

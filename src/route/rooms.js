@@ -5,6 +5,25 @@ var after = require("after"),
 module.exports = function _route(app, model, io) {
     var Room = new model();
 
+    function beLoggedIn(req, res, next) {
+        if (req.user) {
+            next();
+        } else {
+            res.redirect("/auth");
+        }
+    }
+
+    function beOwner(req, res, next) {
+        var roomId = req.params.roomId;
+        Room.get(roomId, function(err, room) {
+            if (room.created_by === req.user.id) {
+                next()
+            } else {
+                next(new Error("not allowed"));
+            }
+        })
+    }
+
     app.get("/rooms", function(req, res) {
         Room.getRange(0, -1, function(err, data) {
             var cb = after(data.length, function() {
@@ -26,12 +45,21 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.get("/rooms/new", function(req, res) {
+    app.get("/rooms/new", [beLoggedIn], function(req, res) {
         res.render("rooms/new");
     });
 
     app.get("/rooms/:roomId", function(req, res) {
-        res.render("rooms/details");
+        Room.get(req.params.roomId, function(err, room) {
+            User.getR(room.created_by, function(err, user) {
+                user.id = room.created_by;
+                user.userLink = "/users/" + user.id + "/" + user.name;
+                res.render("rooms/details", {
+                    "room": room,
+                    "owner": user
+                });    
+            });
+        });
     });
 
     app.get("/transcript/:roomId", function(req, res) {
@@ -64,7 +92,7 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.get("/chat/:roomId/:title?", function(req, res) {
+    app.get("/chat/:roomId/:title?", [beLoggedIn], function(req, res) {
         Room.get(req.params.roomId, function(err, room) {
             res.render("rooms/view", {
                 room: room
@@ -72,7 +100,7 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.post("/rooms", function(req, res) { 
+    app.post("/rooms", [beLoggedIn], function(req, res) { 
         Room.create(req.user.id, req.body, function (err, roomId) {
             Room.get(roomId, function(err, room) {
                 room.id = roomId;
@@ -83,8 +111,10 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.put("/rooms/:roomId/:title?", function(req, res) {
-        res.redirect("/rooms/" + req.params.roomId);
+    app.put("/rooms/:roomId/:title?", [beOwner], function(req, res) {
+        Room.update(req.params.roomId, req.body, function(err, room) {
+            res.send(room);
+        });
     });
 
 };

@@ -3,6 +3,9 @@
     var message = messages[i]; %>
 <div>
     <span>
+        <%= new Date(message.timestamp).toString() %>
+    </span>
+    <span>
         <%= message.owner.name %>
     </span>
      : 

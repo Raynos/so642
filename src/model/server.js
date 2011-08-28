@@ -33,10 +33,14 @@ var messageModel = new MessageModel();
 //incrementMessageCount(1, 5);
 //getMessageCount(1);
 
+getHistogram(1);
+
 /*------------------------------------------------------------------------------
   MessageModel
 ------------------------------------------------------------------------------*/
-getMessageRange(3, 12, 14);
+//createMessage({owner_id: 1,text: "test message number asdf",room: 1});
+
+//getMessageRange(3, 12, 14);
 //getMessagesByDay(6, "2011-8-27");
 
 /*------------------------------------------------------------------------------
@@ -399,29 +403,36 @@ function getMessageCount(roomID) {
 
 /*------------------------------------------------------------------------------
 
-  incrementMessageCount
+  getHistogram
 
 ------------------------------------------------------------------------------*/
-function incrementMessageCount(roomID, lastMessageID) {
-    roomModel.incrementMessageCount(roomID, lastMessageID, function(err, res) {
+function getHistogram(roomID) {
+    roomModel.getHistogram(roomID, function(err, res) {
         if(err) {
             util.log(err);
         } else {
-            util.log(res);
+            /*util.log(JSON.stringify(res));
+            var str = "";
+            for(var item in res) {
+                str += res[item] + " ";
+            }
+            util.log(str);*/
+            
+            util.log(JSON.stringify(res));
         }
     });
 }
 
 /*------------------------------------------------------------------------------
-  Inser some messages to CouchDB
+
+  MESSAGES
+
+  create Message
+
 ------------------------------------------------------------------------------*/
-/*for(var i = 0, len = 5; i < len; i++) {
+function createMessage(obj) {
     messageModel.create(
-        {
-            owner_id: 3,
-            text: "test message number " + i,
-            room: 2,
-        },
+        obj,
         function(err, messageID) {
             if(err) {
                 util.log(err);
@@ -430,7 +441,7 @@ function incrementMessageCount(roomID, lastMessageID) {
             }
         }
     );
-}*/
+}
 
 /*------------------------------------------------------------------------------
   Get latest messages
