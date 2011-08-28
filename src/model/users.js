@@ -323,7 +323,7 @@ UserModel.prototype.getIgnoredUsers = function(userID, callback) {
   + callback - err or native response
   - void
   
-  Set specific room to user set of rooms where he is currently in.
+  Set specific userID to user ignore set.
 ------------------------------------------------------------------------------*/    
 UserModel.prototype.setIgnoredUser = function(userID, ignoredUserID, callback) {
     this._redisClient.sadd(
@@ -347,7 +347,7 @@ UserModel.prototype.setIgnoredUser = function(userID, ignoredUserID, callback) {
   + callback - err or native response
   - void
   
-  Removes specific room from a set of user rooms where he is currently in.
+  Unset specific userID from user ignore set.
 ------------------------------------------------------------------------------*/    
 UserModel.prototype.unsetIgnoredUser = function(userID, ignoredUserID, callback) {
     this._redisClient.srem(

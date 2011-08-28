@@ -33,7 +33,11 @@ var messageModel = new MessageModel();
 //incrementMessageCount(1, 5);
 //getMessageCount(1);
 
-
+/*------------------------------------------------------------------------------
+  MessageModel
+------------------------------------------------------------------------------*/
+getMessageRange(3, 12, 14);
+//getMessagesByDay(6, "2011-8-27");
 
 /*------------------------------------------------------------------------------
   Create new user in Couch and Redis
@@ -442,14 +446,35 @@ function incrementMessageCount(roomID, lastMessageID) {
 });*/
 
 /*------------------------------------------------------------------------------
-  Get message range
+
+  getMessageRange
+
 ------------------------------------------------------------------------------*/
-/*messageModel.getMessageRange(2, 3, 5, function(err, res) {
-    if(err) {
-        util.log(err);
-    } else {
-        res.forEach(function(row) {
-            util.log(JSON.stringify(row));
-        });
-    }
-});*/
+function getMessageRange(roomID, from, to) {
+    messageModel.getMessageRange(roomID, from,  to, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            res.forEach(function(row) {
+                util.log(JSON.stringify(row));
+            });
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  getMessagesByDay
+
+------------------------------------------------------------------------------*/
+function getMessagesByDay(roomID, day) {
+    messageModel.getMessagesByDay(roomID, day, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            res.forEach(function(row) {
+                util.log(JSON.stringify(row));
+            });
+        }
+    });
+}

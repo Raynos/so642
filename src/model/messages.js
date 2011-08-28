@@ -97,7 +97,7 @@ MessageModel.prototype.get = function(messageID, callback) {
 MessageModel.prototype.getLatestMessages = function(roomID, count, callback) {
     this._couchClient.view(
         "views/getLatestMessages", 
-        {startkey: [roomID, {}], endkey: [roomID],descending: true,limit: count}, 
+        {startkey: [roomID.toString(), {}], endkey: [roomID],descending: true,limit: count}, 
         function(err, res) {
             if(err) {
                 callback(err, undefined);
@@ -122,7 +122,31 @@ MessageModel.prototype.getLatestMessages = function(roomID, count, callback) {
 MessageModel.prototype.getMessageRange = function(roomID, fromMessage, toMessage, callback) {
     this._couchClient.view(
         "views/getMessageRange", 
-        {startkey: [roomID, "message:" + fromMessage], endkey: [roomID, "message:" + toMessage]}, 
+        {startkey: [roomID.toString(), "message:" + fromMessage], endkey: [roomID.toString(), "message:" + toMessage]}, 
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
+};
+
+/*------------------------------------------------------------------------------
+  (public) getMessagesByDay
+
+  + roomID
+  + day - string format year-month-day - for example 2011-8-28
+  + callback - err or array of messages
+  - void
+  
+  Get messages of specific room by day from CouchDB.
+------------------------------------------------------------------------------*/    
+MessageModel.prototype.getMessagesByDay = function(roomID, day, callback) {
+    this._couchClient.view(
+        "views/getMessagesByDay", 
+        {startkey: [roomID.toString(), day, {}], endkey: [roomID.toString(), day], descending:true}, 
         function(err, res) {
             if(err) {
                 callback(err, undefined);
