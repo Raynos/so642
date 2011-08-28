@@ -28,8 +28,11 @@ module.exports = function _route(app, model, io) {
     app.get("/rooms", function(req, res) {
         Room.getRange(0, -1, function(err, data) {
             var cb = after(data.length, function() {
+                var rooms = Array.prototype.sort.call(arguments, function(a, b) {
+                    return a.id < b.id;
+                });
                 res.render("rooms/index", {
-                    rooms: arguments,
+                    rooms: rooms,
                     categories: {}
                 }); 
             });
