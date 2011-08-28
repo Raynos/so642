@@ -131,12 +131,14 @@ module.exports = function _route(app, model, io) {
                         break;
                     }
                 }
-                Room.unsetCurrentUser(user.id, room.id, function(err, res) {
-                    room.removeUser(socket);
-                    room.emit("userLeft", {
-                        userId: user.id         
+                if (user && room) {
+                    Room.unsetCurrentUser(user.id, room.id, function(err, res) {
+                        room.removeUser(socket);
+                        room.emit("userLeft", {
+                            userId: user.id         
+                        });    
                     });    
-                });
+                }
             });
 
             socket.emit("ready");
