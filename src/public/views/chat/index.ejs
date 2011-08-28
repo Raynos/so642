@@ -97,9 +97,9 @@
 <script src='/socket.io/socket.io.js'></script>
 
 <script id="messagebox" type="text/x-jquery-tmpl">
-  <div class="messagebox left {{if isUser}}mine{{/if}}">
+  <div class="messagebox left ${isUser}">
     <div class="userbox">
-      <img src="http://gravatar.com/avatar/${gravatar_hash}" id="user-1" title="${name}" class="userimage"/>
+      <img src="http://gravatar.com/avatar/${gravatar_hash}" id="user-${userid}" title="${name}" class="userimage"/>
       <span class="username">${name}</span>
     </div>
     <div class="messages">
@@ -295,7 +295,7 @@
     data.name = user.name;
     data.userid = user.id;
     data.gravatar_hash = user.gravatar_hash;
-    data.isUser = (userId === message.owner_id) ? 1 : 0;
+    data.isUser = (userId === message.owner_id) ? 'mine' : '';
     
     data.id = message.id;
     data.userid = message.owner_id;
@@ -388,7 +388,6 @@
 
 <script>
 window.onload = function() {
-    console.log($("#chat"));
     window.socket = io.connect();
 
     function addUser(user, inRoom) {
