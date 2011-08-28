@@ -1,4 +1,4 @@
-
+@import "style";
 
 /*  messages > message > timestamp/action-link/content/meta/flash
   <div class="messagebox {{if isUser}}mine{{/if}}">
@@ -30,7 +30,6 @@
     margin-right: .5%;
     min-height: 18px;
     display: inline-block;
-    background-color: #800000;
     text-align: right;
     word-wrap: break-word;
     float: left;
@@ -40,6 +39,9 @@
     .username{
       font-size: 90%;
       font-style: italic;
+    }
+    .username:after{
+      content: " ";
     }
   }
   .messages {
