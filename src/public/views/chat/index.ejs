@@ -106,7 +106,7 @@
         <div class="timestamp">${id} ${timedisplay}</div>
         <a class="action-link" href="/users/${userid}"></a>
         <div class="meta"></div>
-        <span class="content">${content}</span>
+        <span class="content"></span>
         <div class="flash"></div>
       </div>
     </div>
@@ -289,7 +289,7 @@
       /* TODO */
       return; 
     }
-    
+
     var data = {};
     data.name = user.name;
     data.userid = user.id;
@@ -326,7 +326,7 @@
       inserted_message = $.tmpl( messagebox, data );
       inserted_message.after( previousMessage );
     } else {
-      /* just remove the previous message and replace it with the new one */        
+      /* just remove the previous message and replace it with the new one */
       inserted_message = $.tmpl( messagebox, data );
       inserted_message.after( previousMessage );
       previousMessage.remove();
@@ -368,6 +368,12 @@
       checkForTooManyMessages();
     }
   }
+
+  function reRenderUserMessage(user, message) {
+    /* this can only be called once a message has been emitted from the server */
+    userArray[message.owner_id] = user; /* here we update the user */
+    renderMessage(message);
+  }
   
 </script>
 
@@ -395,12 +401,6 @@ window.onload = function() {
     
     function removeUserImage(id) {
       $('#userList user-' + id).remove();   
-    }
-    
-    function reRenderUserMessage(user, message) {
-      /* this can only be called once a message has been emitted from the server */
-      userArray[message.owner_id] = user; /* here we update the user */
-      renderMessage(message);
     }
     
     function removeMessage(id){
