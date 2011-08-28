@@ -1,4 +1,5 @@
-var after = require("after");
+var after = require("after"),
+    sanitize = require('validator').sanitize;
 
 module.exports = function _route(app, model, io) {
     var User = new model();
@@ -40,7 +41,13 @@ module.exports = function _route(app, model, io) {
     });
 
     app.put("/users/:userId", [beUser], function(req, res) {
-        User.update(req.params.userId, req.body, function(err, user) {
+        var obj = {}, item;
+    
+        for(item in req.body) {
+            obj[item] = sanitize(req.body[item]).xss();
+        }
+    
+        User.update(req.params.userId, obj, function(err, user) {
             User.getR(user.id.split(":")[1], function(err, user) {
                 console.log("update", arguments);
                 res.send(user);    
