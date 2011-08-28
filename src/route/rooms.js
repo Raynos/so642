@@ -16,7 +16,8 @@ module.exports = function _route(app, model, io) {
                 var id = val.split(":")[1]
                 Room.get(val.split(":")[1], function(err, room) {
                     room.id = id;
-                    room.roomLink = "/rooms/" + room.id + "/" + room.name;
+                    room.roomLink = '/chat/' + room.id + 
+                        "/" + room.name.replace(/\s/g, "-");
                     cb(room);
                 });
             });
@@ -27,15 +28,15 @@ module.exports = function _route(app, model, io) {
         res.render("rooms/new");
     });
 
-    app.get("/rooms/:roomId/details", function(req, res) {
+    app.get("/rooms/:roomId", function(req, res) {
         res.render("rooms/details");
     });
 
-    app.get("/rooms/:roomId/transcript", function(req, res) {
+    app.get("/transcript/:roomId", function(req, res) {
         res.render("rooms/transcript");
     });
 
-    app.get("/rooms/:roomId/:title?", function(req, res) {
+    app.get("/chat/:roomId/:title?", function(req, res) {
         Room.get(req.params.roomId, function(err, room) {
             res.render("rooms/view", {
                 room: room
@@ -47,7 +48,8 @@ module.exports = function _route(app, model, io) {
         Room.create(req.user.id, req.body, function (err, roomId) {
             Room.get(roomId, function(err, room) {
                 room.id = roomId;
-                room.roomLink = '/rooms/' + room.id + "/" + room.name;
+                room.roomLink = '/chat/' + room.id + 
+                    "/" + room.name.replace(/\s/g, "-");
                 res.send(room); 
             });
         });

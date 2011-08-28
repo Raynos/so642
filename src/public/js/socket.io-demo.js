@@ -1,5 +1,6 @@
 window.onload = function() {
     var socket = io.connect();
+    console.log(socket);
 
     var userArray = {};
 
@@ -9,6 +10,11 @@ window.onload = function() {
             renderUserImage(user);       
         }
     };
+
+    function removeUser(id) {
+        delete userArray[id];
+        removeUserImage(id);
+    }
 
     function renderUserMessage(user, data) {
         var div = document.createElement("div");
@@ -27,10 +33,21 @@ window.onload = function() {
         main.insertBefore(div, input);
     }
 
+    function removeUserImage(id) {
+        var imgs = document.getElementsByTagName("img");
+        for (var i = 0; i < imgs.length; i++) {
+            if (imgs[i].dataset.id === id) {
+                imgs[i].parentNode.removeChild(imgs[i]);
+                break;
+            }
+        }    
+    };
+
     function renderUserImage(user) {
         var img = document.createElement("img");
 
         img.src = "http://gravatar.com/avatar/" + user.gravatar_hash;
+        img.dataset.id = user.id;
 
         main.appendChild(img);
     }
@@ -87,7 +104,11 @@ window.onload = function() {
     createUI();
 
     socket.on("userJoined", function(user) {
-        addUser(user.userData)
+        addUser(user.userData);
+    });
+
+    socket.on("userLeft", function(user) {
+        removeUser(user.userId);  
     });
 
     socket.on("provide:user", addUser);
