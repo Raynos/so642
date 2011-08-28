@@ -33,7 +33,7 @@
                 var el = document.getElementById(id);
                 var input = document.createElement("input");
                 input.id = id;
-                input.value = el.textContent;
+                input.value = el.textContent || el.value;
                 el.parentNode.replaceChild(input, el); 
             });
 
