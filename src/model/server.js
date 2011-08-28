@@ -35,6 +35,14 @@ var messageModel = new MessageModel();
 
 //getHistogram(1);
 
+//deleteRoom(3);
+//getDeletedRange(0, -1);
+//undeleteRoom(3);
+
+//froze(3);
+//getFrozenRange(0, -1);
+//unfroze(3);
+
 /*------------------------------------------------------------------------------
   MessageModel
 ------------------------------------------------------------------------------*/
@@ -55,7 +63,7 @@ var messageModel = new MessageModel();
 //pin(1, 1);
 //unpin(1);
 
-addHistory(1, 1, "new newer new stuff", true);
+//addHistory(1, 1, "new newer new stuff", true);
 
 /*------------------------------------------------------------------------------
   Create new user in Couch and Redis
@@ -302,6 +310,96 @@ function getUserByGithub(githubID) {
 ------------------------------------------------------------------------------*/
 function updateRoom(roomID, obj) {
     roomModel.update(roomID, obj, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  getDeletedRange
+
+------------------------------------------------------------------------------*/
+function getDeletedRange(start, end) {
+    roomModel.getDeletedRange(start, end, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  delete room
+
+------------------------------------------------------------------------------*/
+function deleteRoom(roomID) {
+    roomModel.delete(roomID, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  undelete room
+
+------------------------------------------------------------------------------*/
+function undeleteRoom(roomID) {
+    roomModel.undelete(roomID, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  getFrozenRange
+
+------------------------------------------------------------------------------*/
+function getFrozenRange(start, end) {
+    roomModel.getFrozenRange(start, end, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  froze room
+
+------------------------------------------------------------------------------*/
+function froze(roomID) {
+    roomModel.froze(roomID, function(err, res) {
+        if(err) {
+            util.log(err);
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  unfroze room
+
+------------------------------------------------------------------------------*/
+function unfroze(roomID) {
+    roomModel.unfroze(roomID, function(err, res) {
         if(err) {
             util.log(err);
         } else {

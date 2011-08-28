@@ -109,6 +109,154 @@ RoomModel.prototype.update = function(roomID, obj, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) getDeletedRange
+
+  + startIndex
+  + endIndex
+  + callback - err or array of deleted room IDs
+  - void
+  
+  Get range of deleted rooms.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.getDeletedRange = function(startIndex, endIndex, callback) {
+    this._redisClient.lrange("rooms:deleted", startIndex, endIndex, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) delete
+
+  + roomID
+  + callback - err or native response
+  - void
+  
+  Delete existing room.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.delete = function(roomID, callback) {
+    var self = this;
+
+    self._redisClient.lrem("rooms", 1, "room:" + roomID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            self._redisClient.lpush("rooms:deleted", "room:" + roomID, function(err2, res2) {
+                if(err2) {
+                    callback(err2, undefined);
+                } else {
+                    callback(undefined, res2);
+                }
+            });
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) undelete
+
+  + roomID
+  + callback - err or native response
+  - void
+  
+  Delete existing room.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.undelete = function(roomID, callback) {
+    var self = this;
+
+    self._redisClient.lrem("rooms:deleted", 1, "room:" + roomID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            self._redisClient.lpush("rooms", "room:" + roomID, function(err2, res2) {
+                if(err2) {
+                    callback(err2, undefined);
+                } else {
+                    callback(undefined, res2);
+                }
+            });
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) getFrozenRange
+
+  + startIndex
+  + endIndex
+  + callback - err or array of frozen room IDs
+  - void
+  
+  Get range of frozen rooms.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.getFrozenRange = function(startIndex, endIndex, callback) {
+    this._redisClient.lrange("rooms:frozen", startIndex, endIndex, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) froze
+
+  + roomID
+  + callback - err or native response
+  - void
+  
+  Froze existing room.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.froze = function(roomID, callback) {
+    var self = this;
+
+    self._redisClient.lrem("rooms", 1, "room:" + roomID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            self._redisClient.lpush("rooms:frozen", "room:" + roomID, function(err2, res2) {
+                if(err2) {
+                    callback(err2, undefined);
+                } else {
+                    callback(undefined, res2);
+                }
+            });
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) Unfroze
+
+  + roomID
+  + callback - err or native response
+  - void
+  
+  Unfroze existing room.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.unfroze = function(roomID, callback) {
+    var self = this;
+
+    self._redisClient.lrem("rooms:frozen", 1, "room:" + roomID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            self._redisClient.lpush("rooms", "room:" + roomID, function(err2, res2) {
+                if(err2) {
+                    callback(err2, undefined);
+                } else {
+                    callback(undefined, res2);
+                }
+            });
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
   (public) get
 
   + roomID
