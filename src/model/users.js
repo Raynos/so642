@@ -176,6 +176,27 @@ UserModel.prototype.updateR = function(userID, obj, callback) {
     });
 };
 
+/*------------------------------------------------------------------------------
+  (public) update
+
+  + userID
+  + obj
+  + callback - err or native response
+  - void
+  
+  Update specific user in Redis and CouchDB.
+------------------------------------------------------------------------------*/    
+UserModel.prototype.update = function(userID, obj, callback) {
+    var self = this;
+    this.updateR(userID, obj, function(err, res) {
+        if (err) {
+            callback(err, undefined);
+        } else {
+            self.updateC(userID, obj, callback);
+        }
+    });
+};
+
 
 /*------------------------------------------------------------------------------
   (public) getC

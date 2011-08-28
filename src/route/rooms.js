@@ -5,6 +5,14 @@ var after = require("after"),
 module.exports = function _route(app, model, io) {
     var Room = new model();
 
+    function beLoggedIn(req, res, next) {
+        if (req.user) {
+            next();
+        } else {
+            res.redirect("/auth");
+        }
+    }
+
     app.get("/rooms", function(req, res) {
         Room.getRange(0, -1, function(err, data) {
             var cb = after(data.length, function() {
@@ -26,7 +34,7 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.get("/rooms/new", function(req, res) {
+    app.get("/rooms/new", [beLoggedIn], function(req, res) {
         res.render("rooms/new");
     });
 
@@ -64,7 +72,7 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.get("/chat/:roomId/:title?", function(req, res) {
+    app.get("/chat/:roomId/:title?", [beLoggedIn], function(req, res) {
         Room.get(req.params.roomId, function(err, room) {
             res.render("rooms/view", {
                 room: room
@@ -72,7 +80,7 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.post("/rooms", function(req, res) { 
+    app.post("/rooms", [beLoggedIn], function(req, res) { 
         Room.create(req.user.id, req.body, function (err, roomId) {
             Room.get(roomId, function(err, room) {
                 room.id = roomId;

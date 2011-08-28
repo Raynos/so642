@@ -95,10 +95,11 @@ module.exports = function(app) {
     .appSecret(process.env.githubSecret)
     .findOrCreateUser(function(session, token, tokenExtra, github) {
             var p = this.Promise();
-            User.getUserByEmail(github.email, function(err, user) {
+            User.getUserByGithub(github.id, function(err, user) {
                 if (user.length === 0) {
                     User.create({
                         name: github.name,
+                        github_id: github.id,
                         email: github.email,
                         gravatar_hash: github.gravatar_id
                     }, function(err, id) {
