@@ -15,6 +15,7 @@
 		"watch": "0.3.2",
 		"node-uuid": "1.2.0",
 		"connect-gzip": "0.1.0",
+		"buffertools": "1.0.3",
 		"everyauth": "0.2.18",
 		"redis": "0.6.7",
 		"cradle": "0.5.5"
