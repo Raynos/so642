@@ -1,0 +1,79 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title></title>
+  <meta name="description" content="This website is an entry for nodeknockout2011">
+  <meta name="author" content="jcolebrand, raynos, yojimbo87">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="/css/chat.css">  
+  <link href='http://fonts.googleapis.com/css?family=Aldrich' rel='stylesheet' type='text/css'>
+  <script src="/js/libs/modernizr-2.0.6.min.js"></script>
+  
+</head>
+<body>
+<div id="container">
+  <!-- this is the chat window side -->
+  <div id="transcript">
+    <div id="chat">
+    
+<% for (var k in messages) { var message = messages[k]; var user = message.owner; %>
+  <div class="messagebox left">
+    <div class="userbox">
+      <a href="/users/<%= user.id %>">
+        <img src="http://gravatar.com/avatar/<%= user.gravatar_hash %>" id="user-<%= user.id %>" title="<%= user.name%>" class="userimage"/>
+      </a>
+      <span class="username"><%=  user.name %></span>
+    </div>
+    <div class="messages">
+      <div id="message-<%= message.id %>" class="message">
+        <div class="timestamp"><%= message.id %> <%= message.timedisplay%></div>
+        <a class="action-link" href="/users<%= user.id%>"></a>
+        <div class="meta"></div>
+        <span class="content"><%= message.text %></span>
+        <div class="flash"></div>
+      </div>
+    </div>
+  </div>
+<% } %>
+    
+    </div>
+  </div>
+  <!-- this is the other panel side -->
+  <div id="roominfopanel">
+    <div class="sidebarpanel">
+      <div>
+        <a class="button" href="/rooms/">room list</a>
+        <div id="searchblock" class="right padlink">
+          <input type="text" size="25" name="search" value="Search" id="search" class="untouched"/>
+        </div>
+        <div>
+          <span class="currentroomname"><%= room.name %></span>
+          <span class="currentroomdescription"><%= room.description %></span>
+          <span class="currentroomid"><%= room.id %></span>
+        </div>
+      </div>
+    </div>
+    <div class="sidebarpanel">
+      <span class="sidebarpanelheader">Transcript for the room only shows 100 messages</span>
+    </div>
+  </div>  
+</div> <!--! end of #container -->
+
+<script>
+/*
+  var _gaq=[['_setAccount','UA-25222034-2'],['_trackPageview']]; // Change UA-XXXXX-X to be your site's ID
+  (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
+  g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+  s.parentNode.insertBefore(g,s)}(document,'script'));
+*/
+</script>
+</body>
+</html>
