@@ -101,7 +101,8 @@ module.exports = function _route(app, model, io) {
                         return v; 
                     }).sort(function(a, b) {
                         return a.id < b.id;
-                    })      
+                    }),
+                    "layout": false
                 });
             })
 
