@@ -102,7 +102,8 @@ module.exports = function _route(app, model, io) {
         Room.get(req.params.roomId, function(err, room) {
             room.id = req.params.roomId;
             res.render("chat/index", {
-                room: room
+                room: room,
+                layout: false
             });
         });
     });
