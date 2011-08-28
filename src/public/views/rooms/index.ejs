@@ -22,16 +22,16 @@
                 <div class="cardinner">
                   <div class="textinner">
                     <div class="starbox"> 
-                      <a href="<%= room.roomLink %>"><span class="join">join</span></a><span class="star <% if(room.starred===0){ %>starred<% } %>"></span>
+                      <a href="<%= room.roomLink %>" class="join" title="Click here to join this chat right now!">join</a><span class="star <% if(room.starred===0){ %>starred<% } %>"></span>
                     </div>
-                      <a href="<%= room.roomLink %>"><span class="cardname"><%=room.name%></span></a><br/>
+                      <a href="<%= room.roomLink %>" class="cardname" title="Click here to join this chat right now!"><%=room.name%></a><br/>
                       <span class="cardtext"><%= room.description %></span>
                       <div class="histogram" title="This is a pretty good representation of the activity in this room over the course of a 24 hour period. The current time is highlighted by the vertical bar.">
                         histogram goes here
                       </div>
                       <div class="bottomline">
-                        <a href="/transcript/<%= room.id %>/"><span class="transcript">transcript</span></a>
-                        <a href="/rooms/<%= room.id %>/"><span class="info right">info</span></a>
+                        <a href="/transcript/<%= room.id %>/" class="transcript" title="Click to visit today's transcript of this room">transcript</a>
+                        <a href="/rooms/<%= room.id %>/" class="info" title="Click to learn more about this room">info</a>
                       </div>
                   </div>
                   <div class="textnumbers">
