@@ -50,8 +50,12 @@ var messageModel = new MessageModel();
 //flag(1, 1);
 //flag(1, 2);
 //flag(1, 3);
-unflag(1, 1);
+//unflag(1, 1);
 
+//pin(1, 1);
+//unpin(1);
+
+addHistory(1, 1, "new newer new stuff", true);
 
 /*------------------------------------------------------------------------------
   Create new user in Couch and Redis
@@ -455,6 +459,21 @@ function createMessage(obj) {
 
 /*------------------------------------------------------------------------------
 
+  addHistory
+
+------------------------------------------------------------------------------*/
+function addHistory(messageID, userID, text, isRendered) {
+    messageModel.addHistory(messageID, userID, text, isRendered, function(err, res) {
+        if(err) {
+            util.log(JSON.stringify(err));
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
   star
 
 ------------------------------------------------------------------------------*/
@@ -500,11 +519,41 @@ function flag(messageID, userID) {
 
 /*------------------------------------------------------------------------------
 
-  unflag
+  unstar
 
 ------------------------------------------------------------------------------*/
-function unflag(messageID, userID) {
-    messageModel.unflag(messageID, userID, function(err, res) {
+function unstar(messageID, userID) {
+    messageModel.unstar(messageID, userID, function(err, res) {
+        if(err) {
+            util.log(JSON.stringify(err));
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  pin
+
+------------------------------------------------------------------------------*/
+function pin(messageID, userID) {
+    messageModel.pin(messageID, userID, function(err, res) {
+        if(err) {
+            util.log(JSON.stringify(err));
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  unpin
+
+------------------------------------------------------------------------------*/
+function unpin(messageID) {
+    messageModel.unpin(messageID, function(err, res) {
         if(err) {
             util.log(JSON.stringify(err));
         } else {
