@@ -141,7 +141,10 @@ module.exports = function _route(app, model, io) {
         }
     
         Room.update(req.params.roomId, obj, function(err, room) {
-            res.send(room);
+            Room.get(req.params.roomId, function(err, room) {
+                console.log(room);
+                res.send(room);    
+            });
         });
     });
 

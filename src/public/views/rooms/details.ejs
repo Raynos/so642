@@ -20,7 +20,7 @@
 
     <p>
         owner : <a href="<%= owner.userLink %>"> 
-            <span id="room-created_by"> <%= owner.name %> </span> 
+            <span id="room-owner"> <%= owner.name %> </span> 
         </a>
     </p>
 
@@ -66,10 +66,26 @@
             $.ajax({
                 type: "PUT",
                 url: "/rooms/" + roomId,
-                data: data
+                data: data,
+                success: function (data, status, xhr) {
+                  updateInputs(data);
+                }
             });
 
         }, false);
+
+        function updateInputs(data) {
+            for (var k in data) {
+                var id = "room-" + k;
+                var span = document.createElement("span");
+                span.id = id;
+                var input = document.getElementById(id);
+                if (input) {
+                    span.textContent = data[k];
+                    input.parentNode.replaceChild(span, input)
+                }
+            }
+        }
     </script>
 
 <% } %>
