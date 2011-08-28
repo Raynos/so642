@@ -49,7 +49,6 @@ module.exports = function _route(app, model, io) {
     
         User.update(req.params.userId, obj, function(err, user) {
             User.getR(user.id.split(":")[1], function(err, user) {
-                console.log("update", arguments);
                 res.send(user);    
             });
         });
