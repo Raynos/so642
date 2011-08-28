@@ -1,7 +1,8 @@
 var after = require("after"),
     sanitize = require('validator').sanitize,
     Message = new (require("../model/messages.js"))(),
-    User = new (require("../model/users.js"))();
+    User = new (require("../model/users.js"))(),
+    marked = require("marked");
 
 module.exports = function _route(app, model, io) {
     var Room = new model();
@@ -86,12 +87,16 @@ module.exports = function _route(app, model, io) {
             var cb = after(data.length, function() {
                 users = {};
                 for (var i = 0; i < arguments.length; i++) {
+                    arguments[i].user.id = arguments[i].id
                     users[arguments[i].id] = arguments[i].user;
                 }
 
                 res.render("rooms/transcript", {
                     "messages": data.map(function(v) {
                         v.id = v._id.split(":")[1]
+                        v.timedisplay = new Date(v.timestamp).toLocaleTimeString();
+                        v.text = marked(v.text);
+                        v.isRendered = true;
                         v.owner = users[v.owner_id];
                         return v; 
                     }).sort(function(a, b) {
