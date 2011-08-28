@@ -35,13 +35,13 @@ RoomModel.prototype.create = function(userID, obj, callback) {
     var self = this,
         date = new Date();
     
-    obj.id = roomID;
     obj.created = date.getTime();
     obj.created_by = userID;
     obj.total_messages = 0;
     obj.total_messages_24hours = 0;
     
     self._redisClient.hincrby("increment", "rooms", 1, function(err, roomID) {
+        obj.id = roomID;
         if(err) {
             callback(err, undefined);
         } else {
