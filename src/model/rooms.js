@@ -35,12 +35,19 @@ RoomModel.prototype.create = function(userID, obj, callback) {
     var self = this,
         date = new Date();
     
+    obj.id = roomID;
+    obj.created = date.getTime();
+    obj.created_by = userID;
+    obj.total_messages = 0;
+    obj.total_messages_24hours = 0;
+    
     self._redisClient.hincrby("increment", "rooms", 1, function(err, roomID) {
         if(err) {
             callback(err, undefined);
         } else {
-            self._redisClient.hmset("room:" + roomID,
-                {
+            self._redisClient.hmset(
+                "room:" + roomID,
+                /*{
                     id: roomID,
                     name: obj.name,
                     description: obj.description,
@@ -49,11 +56,12 @@ RoomModel.prototype.create = function(userID, obj, callback) {
                     last_message: obj.last_message,
                     total_messages: 0,
                     total_messages_24hours: 0,
-                    //total_users_ever: 0,
-                    //total_users_now: 0,
+                    //total_users_ever: 0, - there is a set for that
+                    //total_users_now: 0, - there is a set for that
                     state: obj.state,
                     type: obj.type
-                },
+                },*/
+                obj,
                 function(err2, res2) {
                     if(err2) {
                         callback(err2, undefined);
@@ -244,18 +252,6 @@ RoomModel.prototype.setCurrentUser = function(userID, roomID, callback) {
             if(err) {
                 callback(err, undefined);
             } else {
-                /*self._redisClient.hincrby(
-                    "room:" + roomID,
-                    "total_users_ever",
-                    1,
-                    function(err2, res2) {
-                        if(err2) {
-                            callback(err2, undefined);
-                        } else {
-                            callback(undefined, res2);
-                        }
-                    }
-                );*/
                 callback(undefined, res);
             }
         }

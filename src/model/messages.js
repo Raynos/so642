@@ -33,14 +33,23 @@ var MessageModel = module.exports = function MessageModel() {
 MessageModel.prototype.create = function(obj, callback) {
     var self = this,
         date = new Date();
-
+    
+    obj.type = "message";
+    obj.starred = [];
+    obj.flagged = [];
+    obj.timestamp = date.getTime(),
+    obj.deleted = null; // null indicates not deleted
+    obj.deletedBy = null; // indicates who deleted the message
+    obj.isRendered = false;
+    obj.history = [];
+    
     self._redisClient.hincrby("increment", "messages", 1, function(err, messageID) {
         if(err) {
             callback(err, undefined);
         } else {
             self._couchClient.save(
                 "message:" + messageID.toString(), 
-                {
+                /*{
                     type: "message",
                     owner_id: obj.owner_id,
                     text: obj.text,
@@ -52,11 +61,24 @@ MessageModel.prototype.create = function(obj, callback) {
                     deletedBy: null, // indicates who deleted the message
                     isRendered: false,
                     history: []
-                },
+                },*/
+                obj,
                 function(err2, res2) {
                     if(err2) {
                         callback(err2, undefined);
                     } else {
+                        self._redisClient.hincrby(
+                            "room:" + obj.room, 
+                            "total_messages", 
+                            1
+                        );
+                        
+                        self._redisClient.hset(
+                            "room:" + obj.room, 
+                            "last_message", 
+                            "message:" + messageID
+                        );
+                        
                         callback(undefined, messageID);
                     }
                 }

@@ -36,7 +36,9 @@ var messageModel = new MessageModel();
 /*------------------------------------------------------------------------------
   MessageModel
 ------------------------------------------------------------------------------*/
-getMessageRange(3, 12, 14);
+//createMessage({owner_id: 3,text: "test message number asdf",room: 2});
+
+//getMessageRange(3, 12, 14);
 //getMessagesByDay(6, "2011-8-27");
 
 /*------------------------------------------------------------------------------
@@ -413,15 +415,13 @@ function incrementMessageCount(roomID, lastMessageID) {
 }
 
 /*------------------------------------------------------------------------------
-  Inser some messages to CouchDB
-------------------------------------------------------------------------------*/
-/*for(var i = 0, len = 5; i < len; i++) {
+
+  create messages
+
+  ------------------------------------------------------------------------------*/
+function createMessage(obj) {
     messageModel.create(
-        {
-            owner_id: 3,
-            text: "test message number " + i,
-            room: 2,
-        },
+        obj,
         function(err, messageID) {
             if(err) {
                 util.log(err);
@@ -430,7 +430,7 @@ function incrementMessageCount(roomID, lastMessageID) {
             }
         }
     );
-}*/
+}
 
 /*------------------------------------------------------------------------------
   Get latest messages
