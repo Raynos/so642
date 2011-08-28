@@ -310,6 +310,7 @@
     data.timestamp = message.timestamp;
     data.timedisplay = new Date(data.timestamp).toLocaleTimeString();
     data.history = message.history;
+    data.isRendered = message.isRendered;
     
     insert_message_into_chat(data);
     
