@@ -130,7 +130,7 @@ MessageModel.prototype.get = function(messageID, callback) {
 MessageModel.prototype.getLatestMessages = function(roomID, count, callback) {
     this._couchClient.view(
         "views/getLatestMessages", 
-        {startkey: [roomID.toString(), {}], endkey: [roomID],descending: true,limit: count}, 
+        {startkey: [roomID.toString(), {}], endkey: [roomID.toString()],descending: true,limit: count}, 
         function(err, res) {
             if(err) {
                 callback(err, undefined);
