@@ -38,6 +38,7 @@ MessageModel.prototype.create = function(obj, callback) {
     obj.starred = [];
     obj.flagged = [];
     obj.pinned_by = null;
+    obj.pinned_at = null;
     obj.timestamp = date.getTime(),
     obj.deleted = null; // null indicates not deleted
     obj.deletedBy = null; // indicates who deleted the message
@@ -92,6 +93,73 @@ MessageModel.prototype.create = function(obj, callback) {
                         );
                         
                         callback(undefined, messageID);
+                    }
+                }
+            );
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) update
+
+  + messageID
+  + obj
+  + callback - err or native response
+  - void
+  
+  Updates specific message in CouchDB.
+------------------------------------------------------------------------------*/    
+MessageModel.prototype.update = function(messageID, obj, callback) {
+    this._couchClient.merge(
+        "message:" + messageID, 
+        obj, 
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
+};
+
+/*------------------------------------------------------------------------------
+  (public) addHistory
+
+  + messageID
+  + userID
+  + callback - err or native response
+  - void
+  
+  Add history to specific message in CouchDB.
+------------------------------------------------------------------------------*/    
+MessageModel.prototype.addHistory = function(messageID, userID, text, isRendered, callback) {
+    var self = this,
+        date = new Date();
+
+    self._couchClient.get("message:" + messageID, function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            res.history.push({
+                edited_by: "user:" + userID, 
+                edited_at: date.getTime(), 
+                original_text: res.text, 
+                original_isRendered: res.isRendered
+            });
+            
+            res.text = text;
+            res.isRendered = isRendered;
+        
+            self._couchClient.merge(
+                "message:" + messageID, 
+                res, 
+                function(err2, res2) {
+                    if(err2) {
+                        callback(err2, undefined);
+                    } else {
+                        callback(undefined, res2);
                     }
                 }
             );
@@ -286,6 +354,61 @@ MessageModel.prototype.unflag = function(messageID, userID, callback) {
             }
         }
     });
+};
+
+/*------------------------------------------------------------------------------
+  (public) pin
+
+  + messageID
+  + userID
+  + callback - err or native response
+  - void
+  
+  Pin specific message in CouchDB.
+------------------------------------------------------------------------------*/    
+MessageModel.prototype.pin = function(messageID, userID, callback) {
+    var date = new Date();
+    
+    this._couchClient.merge(
+        "message:" + messageID, 
+        {
+            pinned_by: "user:" + userID,
+            pinned_at: date.getTime()
+        }, 
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
+};
+
+/*------------------------------------------------------------------------------
+  (public) Unpin
+
+  + messageID
+  + callback - err or native response
+  - void
+  
+  Unpin specific message in CouchDB.
+------------------------------------------------------------------------------*/    
+MessageModel.prototype.unpin = function(messageID, callback) {
+    this._couchClient.merge(
+        "message:" + messageID, 
+        {
+            pinned_by: null,
+            pinned_at: null
+        }, 
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
 };
 
 /*------------------------------------------------------------------------------
