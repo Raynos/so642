@@ -13,7 +13,12 @@
     <a href="/logout">Account Logout</a>
   </div>
 </div>
-
+<table width="60%" border="0">
+<tr>
+<td width="80">
+<img src="http://gravatar.com/avatar/<%= person.gravatar_hash %>" title="your gravatar based on your email">
+</td>
+<td>
 <div id="user-container">
     <p>
         name: <span id="person-name"><%= person.name %></span> 
@@ -28,6 +33,9 @@
         introduction: <span id="person-introduction"><%= person.introduction %></span>
     </p>
 </div>
+</td>
+</tr>
+</table>
 
 <% if (user && user.id === person.id) { %>
 
@@ -89,6 +97,9 @@
                 if (el) {
                     el.value = data[k];
                 }
+            }
+            if (data.gravatar_hash){
+              $('#gravatar').attr('src','http://gravatar.com/avatar/' + data.gravatar_hash);
             }
         }
 
