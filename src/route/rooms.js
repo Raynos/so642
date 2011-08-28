@@ -1,4 +1,5 @@
 var after = require("after"),
+    sanitize = require('validator').sanitize,
     Message = new (require("../model/messages.js"))(),
     User = new (require("../model/users.js"))();
 
@@ -115,8 +116,14 @@ module.exports = function _route(app, model, io) {
         });
     });
 
-    app.post("/rooms", [beLoggedIn], function(req, res) { 
-        Room.create(req.user.id, req.body, function (err, roomId) {
+    app.post("/rooms", [beLoggedIn], function(req, res) {
+        var obj = {}, item;
+    
+        for(item in req.body) {
+            obj[item] = sanitize(req.body[item]).xss();
+        }
+    
+        Room.create(req.user.id, obj, function (err, roomId) {
             Room.get(roomId, function(err, room) {
                 room.id = roomId;
                 room.roomLink = '/chat/' + room.id + 
@@ -127,7 +134,13 @@ module.exports = function _route(app, model, io) {
     });
 
     app.put("/rooms/:roomId/:title?", [beOwner], function(req, res) {
-        Room.update(req.params.roomId, req.body, function(err, room) {
+        var obj = {}, item;
+    
+        for(item in req.body) {
+            obj[item] = sanitize(req.body[item]).xss();
+        }
+    
+        Room.update(req.params.roomId, obj, function(err, room) {
             res.send(room);
         });
     });

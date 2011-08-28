@@ -18,7 +18,8 @@
 		"buffertools": "1.0.3",
 		"everyauth": "0.2.18",
 		"redis": "0.6.7",
-		"cradle": "0.5.5"
+		"cradle": "0.5.5",
+        "validator": "0.2.7"
 	},
 	"devDependencies": {
 		"forever": "0.6.5"

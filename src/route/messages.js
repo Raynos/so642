@@ -32,7 +32,8 @@ var RoomObject = {
 var User = new (require("../model/users.js"))(),
     Room = new (require("../model/rooms.js"))(),
     everyauth = require("everyauth"),
-    after = require("after");
+    after = require("after"),
+    sanitize = require('validator').sanitize;
 
 module.exports = function _route(app, model, io) {
     var Message = new model();
@@ -59,9 +60,9 @@ module.exports = function _route(app, model, io) {
                     socket.timeout = Date.now();
 
                     var data = {
-                        owner_id: user.id,
-                        text: data.text,
-                        room: data.room.toString()
+                        owner_id: sanitize(user.id).xss(),
+                        text: sanitize(data.text).xss(),
+                        room: sanitize(data.room.toString()).xss()
                     };
 
                     Message.create(data, function(err, id) {
