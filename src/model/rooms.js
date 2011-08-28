@@ -557,3 +557,28 @@ RoomModel.prototype.getHistogram = function(roomID, callback) {
         }
     });
 };
+
+/*------------------------------------------------------------------------------
+  (public) decrementHistogram
+
+  + roomID
+  + bIndex
+  + callback - err or native response
+  - void
+  
+  Get room histogram from Redis.
+------------------------------------------------------------------------------*/    
+RoomModel.prototype.decrementHistogram = function(roomID, bIndex, callback) {
+    this._redisClient.hincrby(
+        "room:" + roomID + ":histogram", 
+        bIndex, 
+        -1,
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
+};
