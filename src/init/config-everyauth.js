@@ -226,7 +226,8 @@ module.exports = function(app) {
               name: user.username,
               email: user.email,
               password_hash: hash,
-              salt: salt
+              salt: salt,
+              gravatar_hash: generateGravatar(user.email)
           };
 
           User.create(obj, function(err, id) {
