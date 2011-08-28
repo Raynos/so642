@@ -252,7 +252,13 @@ RoomModel.prototype.setCurrentUser = function(userID, roomID, callback) {
             if(err) {
                 callback(err, undefined);
             } else {
-                callback(undefined, res);
+                self.setUserEver(userID, roomID, function(err2, res2) {
+                    if(err2) {
+                        callback(err2, undefined);
+                    } else {
+                        callback(undefined, res2);
+                    }
+                });
             }
         }
     );
