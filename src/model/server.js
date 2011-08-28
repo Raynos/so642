@@ -33,7 +33,7 @@ var messageModel = new MessageModel();
 //incrementMessageCount(1, 5);
 //getMessageCount(1);
 
-getHistogram(1);
+//getHistogram(1);
 
 /*------------------------------------------------------------------------------
   MessageModel
@@ -42,6 +42,16 @@ getHistogram(1);
 
 //getMessageRange(3, 12, 14);
 //getMessagesByDay(6, "2011-8-27");
+
+//star(1, 2);
+//star(1, 3);
+//unstar(1, 1);
+
+//flag(1, 1);
+//flag(1, 2);
+//flag(1, 3);
+unflag(1, 1);
+
 
 /*------------------------------------------------------------------------------
   Create new user in Couch and Redis
@@ -441,6 +451,66 @@ function createMessage(obj) {
             }
         }
     );
+}
+
+/*------------------------------------------------------------------------------
+
+  star
+
+------------------------------------------------------------------------------*/
+function star(messageID, userID) {
+    messageModel.star(messageID, userID, function(err, res) {
+        if(err) {
+            util.log(JSON.stringify(err));
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  unstar
+
+------------------------------------------------------------------------------*/
+function unstar(messageID, userID) {
+    messageModel.unstar(messageID, userID, function(err, res) {
+        if(err) {
+            util.log(JSON.stringify(err));
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  flag
+
+------------------------------------------------------------------------------*/
+function flag(messageID, userID) {
+    messageModel.flag(messageID, userID, function(err, res) {
+        if(err) {
+            util.log(JSON.stringify(err));
+        } else {
+            util.log(res);
+        }
+    });
+}
+
+/*------------------------------------------------------------------------------
+
+  unflag
+
+------------------------------------------------------------------------------*/
+function unflag(messageID, userID) {
+    messageModel.unflag(messageID, userID, function(err, res) {
+        if(err) {
+            util.log(JSON.stringify(err));
+        } else {
+            util.log(res);
+        }
+    });
 }
 
 /*------------------------------------------------------------------------------
