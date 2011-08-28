@@ -28,8 +28,11 @@ module.exports = function _route(app, model, io) {
     app.get("/rooms", function(req, res) {
         Room.getRange(0, -1, function(err, data) {
             var cb = after(data.length, function() {
+                var rooms = Array.prototype.sort.call(arguments, function(a, b) {
+                    return a.id < b.id;
+                });
                 res.render("rooms/index", {
-                    rooms: arguments,
+                    rooms: rooms,
                     categories: {}
                 }); 
             });
@@ -91,6 +94,8 @@ module.exports = function _route(app, model, io) {
                         v.id = v._id.split(":")[1]
                         v.owner = users[v.owner_id];
                         return v; 
+                    }).sort(function(a, b) {
+                        return a.id < b.id;
                     })      
                 });
             })

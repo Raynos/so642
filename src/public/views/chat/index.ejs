@@ -310,6 +310,7 @@
     data.timestamp = message.timestamp;
     data.timedisplay = new Date(data.timestamp).toLocaleTimeString();
     data.history = message.history;
+    data.isRendered = message.isRendered;
     
     insert_message_into_chat(data);
     
@@ -348,7 +349,7 @@
       /* for each one, look to see if it even exists in the dom yet, and if not, then go on */
       /* after that, check to see if we can find a place for that message to go. */
       for (var k in messageArray){ var m = messageArray[k];
-        if ( $('#message-'+data.id).parents('.messagebox').size() && parseInt(m.id) > parseInt(previousid) && parseInt(m.id) < parseInt(data.id) ){
+        if ( $('#message-'+m.id).parents('.messagebox').size() && parseInt(m.id) > parseInt(previousid) && parseInt(m.id) < parseInt(data.id) ){
           previousid = m.id;
         }
       }
@@ -358,14 +359,14 @@
       inserted_message = $.tmpl( messagebox, data );
       
       if (previousMessage.attr('id') === 'chat'){
-        previousMessage.append(inserted_message);
+        previousMessage.prepend(inserted_message);
       } else {
         previousMessage.after(inserted_message);
       }
     } else {
       /* just remove the previous message and replace it with the new one */
       inserted_message = $.tmpl( messagebox, data );
-      previousMessage.after(inserted_message);
+      previousMessage.prepend(inserted_message);
       if (previousMessage.attr('id') !== 'chat'){
         previousMessage.remove();
       }

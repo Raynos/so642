@@ -19,7 +19,8 @@
 		"everyauth": "0.2.18",
 		"redis": "0.6.7",
 		"cradle": "0.5.5",
-        "validator": "0.2.7"
+        "validator": "0.2.7",
+        "marked": "0.0.5"
 	},
 	"devDependencies": {
 		"forever": "0.6.5"
