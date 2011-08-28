@@ -306,7 +306,28 @@
     data.timedisplay = new Date(data.timestamp).toLocaleTimeString();
     data.history = message.history;
     
-    //if the message doesn't exist yet in the local array
+    insert_message_into_chat(data);
+    
+    /* always go find and scroll to the last message */
+    /* only do that if we have messages to scroll and only every quarter second (stop this if we're in keyboad navigation mode tho) */
+    /* TODO */
+    if ( $('#chat .message').size() ){
+      var n = $("#chat div.message:last").eq(0);
+      var z = $(window).scrollTop() - n.offset().top;
+      if (n && z){
+        $.throttle( 250, function() {
+          $.scrollTo(n, {offset: -z}) 
+        });
+      }
+    }
+    
+    messageArray[message.id] = message;
+    
+    checkForTooManyMessages();
+  }
+  
+  function insert_message_into_chat(data){
+    //if the message doesn't exist yet in the chat window
     var previousMessage = $('#message-'+message.id).parents('.messagebox');
     if (!previousMessage.size()){
     
@@ -351,23 +372,6 @@
     }else {  /* otherwise we dont' trust them. Actually, at this point, we should farm this out to another method. */
       inserted_message.find('.content').text(message.text);
     }
-    
-    /* always go find and scroll to the last message */
-    /* only do that if we have messages to scroll and only every quarter second (stop this if we're in keyboad navigation mode tho) */
-    /* TODO */
-    if ( $('#chat .message').size() ){
-      var n = $("#chat div.message:last").eq(0);
-      var z = $(window).scrollTop() - n.offset().top;
-      if (n && z){
-        $.throttle( 250, function() {
-          $.scrollTo(n, {offset: -z}) 
-        });
-      }
-    }
-    
-    messageArray[message.id] = message;
-    
-    checkForTooManyMessages();
   }
   
   function checkForTooManyMessages(){
