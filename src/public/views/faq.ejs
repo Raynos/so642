@@ -1,6 +1,18 @@
 <div class="spacer">
 </div>
-<h2> faq </h2>
+<div class="spacer">
+</div>
+<div class="viewHeader">
+  <span class="viewTitle">FAQ - Frequently Asked Questions</span>
+  <div class="tabs right">
+    <% if (categories) { %>
+      <% for(var i = 0; i < categories.length; i++){ %>
+        <a href="/rooms/?category=<%= categories[i] %>" <% if(i===0){ class="active" } %> ><%= categories[i] %></a>
+      <% } %>
+    <% } %>
+  </div>
+</div>
+
 <p>Welcome to StackChat, a derivative implementation of the StackExchange chat system, implemented entirely in javascript, using technologies such as:
 <ul>
 <li>node.js</li>
@@ -12,3 +24,14 @@ We aim to give back to the community with this app, and hope that it is well rec
 </div>
 <p>Please be sure to also check out <a href="/legal">our legal page</a> where we acknowledge the grounds for our recreating this without StackEchange's consent, but why we don't think this is a problem.</p>
 <p>Also on that page you'll find all the projects that we've used here that we remembered to acknowledge (hey, sometimes you forget)</p>
+<p></p>
+<div class="viewHeader">
+  <span class="viewTitle" id="format">Formatting</span>
+</div>
+<p></p>
+<p>Unfortunately we didn't have time during the competition to implement the formatting choices we wanted to. So it will be here one day. Stay in touch with our project for after the <a href="http://nodeknockout.com/">nodeknockout</a> competition.</p>
+<p></p>
+<div class="viewHeader">
+  <span class="viewTitle" id="format">How do I logout?</span>
+</div>
+<p>You can logout by clicking on your name on top of the page and looking on the right hand side.</p>
