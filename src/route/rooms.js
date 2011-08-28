@@ -1,4 +1,6 @@
-var after = require("after");
+var after = require("after"),
+    Message = new (require("../model/messages.js"))(),
+    User = new (require("../model/users.js"))();
 
 module.exports = function _route(app, model, io) {
     var Room = new model();
@@ -33,7 +35,33 @@ module.exports = function _route(app, model, io) {
     });
 
     app.get("/transcript/:roomId", function(req, res) {
-        res.render("rooms/transcript");
+        Message.getLatestMessages(req.params.roomId, 100, function(err, data) {
+            var cb = after(data.length, function() {
+                users = {};
+                for (var i = 0; i < arguments.length; i++) {
+                    users[arguments[i].id] = arguments[i].user;
+                }
+
+                console.log(arguments);
+
+                res.render("rooms/transcript", {
+                    "messages": data.map(function(v) {
+                        v.id = v._id.split(":")[1]
+                        v.owner = users[v.owner_id];
+                        return v; 
+                    })      
+                });
+            })
+
+            data.forEach(function(val) {
+                User.getR(val.owner_id, function(err, user) {
+                    cb({
+                        "id": val.owner_id,
+                        "user": user
+                    });
+                });
+            });
+        });
     });
 
     app.get("/chat/:roomId/:title?", function(req, res) {

@@ -1,1 +1,14 @@
 <h2> room transcript page </h2>
+<% for (var i = 0, ii = messages.length; i < ii; i++) { 
+    var message = messages[i]; %>
+<div>
+    <span>
+        <%= message.owner.name %>
+    </span>
+     : 
+    <span>
+        <%= message.text %>
+    </span>
+</div>
+    
+<% } %>
