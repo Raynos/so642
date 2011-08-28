@@ -395,6 +395,30 @@ RoomModel.prototype.setReadAccess = function(userID, roomID, callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) unsetReadAccess
+
+  + userID
+  + roomsID
+  + callback - err or native response
+  - void
+  
+  Remove read access of userID for specific room.
+------------------------------------------------------------------------------*/
+RoomModel.prototype.unsetReadAccess = function(userID, roomID, callback) {
+    this._redisClient.srem(
+        "room:" + roomID + ":read_access", 
+        "user:" + userID,
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
+};
+
+/*------------------------------------------------------------------------------
   (public) getWriteAccessUsers
 
   + roomID
@@ -425,6 +449,30 @@ RoomModel.prototype.getWriteAccessUsers = function(roomID, callback) {
 ------------------------------------------------------------------------------*/
 RoomModel.prototype.setWriteAccess = function(userID, roomID, callback) {
     this._redisClient.sadd(
+        "room:" + roomID + ":write_access", 
+        "user:" + userID,
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
+};
+
+/*------------------------------------------------------------------------------
+  (public) unsetWriteAccess
+
+  + userID
+  + roomsID
+  + callback - err or native response
+  - void
+  
+  Assigns write access of userID for specific room.
+------------------------------------------------------------------------------*/
+RoomModel.prototype.unsetWriteAccess = function(userID, roomID, callback) {
+    this._redisClient.srem(
         "room:" + roomID + ":write_access", 
         "user:" + userID,
         function(err, res) {
