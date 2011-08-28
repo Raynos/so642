@@ -76,7 +76,7 @@
     </div>
     <div class="sidebarpanel">
       <span class="sidebarpanelheader">Users Currently Here</span>
-      <div class="userList">
+      <div id="userList">
       </div>
     </div>
     <div class="sidebarpanel">
@@ -404,7 +404,9 @@ window.onload = function() {
     }
 
     function renderUserImage(user) {
-      $.tmpl(userimageTemplate, user).prependTo('#userList');
+      removeUserImage(user.id);
+      var tmpl = $.tmpl(userimageTemplate, user);
+      tmpl.prependTo('#userList');
     }
 
     function removeUser(id) {
@@ -413,7 +415,7 @@ window.onload = function() {
     }
     
     function removeUserImage(id) {
-      $('#userList user-' + id).remove();   
+      $('#userList #user-' + id).remove();   
     }
     
     function removeMessage(id){
