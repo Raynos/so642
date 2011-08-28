@@ -1,5 +1,6 @@
 window.onload = function() {
     var socket = io.connect();
+    console.log(socket);
 
     var userArray = {};
 

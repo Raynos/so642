@@ -2,7 +2,9 @@
 name <%= room.name %>
 
 <div id="messageBox">
-
+<% if (!user) { %>
+    Y U NO LOG IN
+<% } %>
 </div>
 
 <script src="/js/socket.io-demo.js"></script>
