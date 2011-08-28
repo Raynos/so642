@@ -79,6 +79,17 @@ MessageModel.prototype.create = function(obj, callback) {
                             "message:" + messageID
                         );
                         
+                        var d = new Date(obj.timestamp),
+                            h = d.getUTCHours(),
+                            m = d.getUTCMinutes(),
+                            b = (h * 4) + (m % 60);
+                            
+                        self._redisClient.hincrby(
+                            "room:" + obj.room + ":histogram", 
+                            b, 
+                            1
+                        );
+                        
                         callback(undefined, messageID);
                     }
                 }

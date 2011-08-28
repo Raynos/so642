@@ -540,39 +540,20 @@ RoomModel.prototype.getMessageCount = function(roomID, callback) {
 };
 
 /*------------------------------------------------------------------------------
-  (public) incrementMessageCount
+  (public) getHistogram
 
   + roomID
-  + lastMessageID
-  + callback - err or native response
+  + callback - err or histogram object
   - void
   
-  Increment total_messages value by 1 and inserts lastMessageID if it is not
-  undefined.
+  Get room histogram from Redis.
 ------------------------------------------------------------------------------*/    
-RoomModel.prototype.incrementMessageCount = function(roomID, lastMessageID, callback) {
-    var self = this;
-
-    self._redisClient.hincrby("room:" + roomID, "total_messages", 1, function(err, res) {
+RoomModel.prototype.getHistogram = function(roomID, callback) {
+    this._redisClient.hgetall("room:" + roomID + ":histogram",  function(err, res) {
         if(err) {
             callback(err, undefined);
         } else {
-            if(lastMessageID) {
-                self._redisClient.hset(
-                    "room:" + roomID, 
-                    "last_message", 
-                    "message:" + lastMessageID, 
-                    function(err2, res2) {
-                        if(err2) {
-                            callback(err2, undefined);
-                        } else {
-                            callback(undefined, res2);
-                        }
-                    }
-                );
-            } else {
-                callback(undefined, res);
-            }
+            callback(undefined, res);
         }
     });
 };
