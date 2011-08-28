@@ -33,7 +33,8 @@ var User = new (require("../model/users.js"))(),
     Room = new (require("../model/rooms.js"))(),
     everyauth = require("everyauth"),
     after = require("after"),
-    sanitize = require('validator').sanitize;
+    sanitize = require('validator').sanitize,
+    marked = require("marked");
 
 module.exports = function _route(app, model, io) {
     var Message = new model();
@@ -71,6 +72,8 @@ module.exports = function _route(app, model, io) {
                         Message.get(id, function(err, res) {
                             var room = getRoom(res.room);
                             res.id = id;
+                            res.text = marked(res.text);
+                            res.isRendered = true;
                             room.emit("newMessage", res);
                         });
                     });
