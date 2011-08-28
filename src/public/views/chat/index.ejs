@@ -340,8 +340,10 @@
       previousMessage = $('#chat');
       var previousid = 0;
       
+      /* for each one, look to see if it even exists in the dom yet, and if not, then go on */
+      /* after that, check to see if we can find a place for that message to go. */
       for (var k in messageArray){ var m = messageArray[k];
-        if (parseInt(m.id) > parseInt(previousid) && parseInt(m.id) < parseInt(message.id)){
+        if ( $('#message-'+message.id).parents('.messagebox').size() && parseInt(m.id) > parseInt(previousid) && parseInt(m.id) < parseInt(message.id) ){
           previousid = m.id;
         }
       }
