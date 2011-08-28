@@ -99,7 +99,9 @@
 <script id="messagebox" type="text/x-jquery-tmpl">
   <div class="messagebox left ${isUser}">
     <div class="userbox">
-      <img src="http://gravatar.com/avatar/${gravatar_hash}" id="user-${userid}" title="${name}" class="userimage"/>
+      <a href="/users/${userid}">
+        <img src="http://gravatar.com/avatar/${gravatar_hash}" id="user-${userid}" title="${name}" class="userimage"/>
+      </a>
       <span class="username">${name}</span>
     </div>
     <div class="messages">
@@ -115,7 +117,9 @@
 </script>
 
 <script id="userimage" type="text/x-jquery-tmpl">
-  <img src="http://gravatar.com/avatar/${gravatar_hash}" id="user-${id}" title="${name}" class="userimage"/>
+  <a href="/users/${id}">
+    <img src="http://gravatar.com/avatar/${gravatar_hash}" id="user-${id}" title="${name}" class="userimage"/>
+  </a>
 </script>
 
 <script>
@@ -298,6 +302,7 @@
     data.isUser = (userId === message.owner_id) ? 'mine' : '';
     
     data.id = message.id;
+    data.text = message.text;
     data.userid = message.owner_id;
     data.deleted = message.deleted;
     data.starred = message.starred.length;
@@ -328,7 +333,7 @@
   
   function insert_message_into_chat(data){
     //if the message doesn't exist yet in the chat window
-    var previousMessage = $('#message-'+message.id).parents('.messagebox');
+    var previousMessage = $('#message-'+data.id).parents('.messagebox');
     if (!previousMessage.size()){
     
       /* since we need to now insert this into the page somewhere, we need to find the best place to put it */
@@ -343,7 +348,7 @@
       /* for each one, look to see if it even exists in the dom yet, and if not, then go on */
       /* after that, check to see if we can find a place for that message to go. */
       for (var k in messageArray){ var m = messageArray[k];
-        if ( $('#message-'+message.id).parents('.messagebox').size() && parseInt(m.id) > parseInt(previousid) && parseInt(m.id) < parseInt(message.id) ){
+        if ( $('#message-'+data.id).parents('.messagebox').size() && parseInt(m.id) > parseInt(previousid) && parseInt(m.id) < parseInt(data.id) ){
           previousid = m.id;
         }
       }
@@ -370,9 +375,9 @@
     if (data.deleted) {  /* if data.deleted is null or falsy, show the text, else show deleted.*/
       inserted_message.find('.content').html('<i>Deleted</i>');
     } else if (data.isRendered){  /* if we already parsed and rendered it on the server, excellent, let's use that */
-      inserted_message.find('.content').html(message.text);
+      inserted_message.find('.content').html(data.text);
     }else {  /* otherwise we dont' trust them. Actually, at this point, we should farm this out to another method. */
-      inserted_message.find('.content').text(message.text);
+      inserted_message.find('.content').text(data.text);
     }
   }
   
