@@ -297,6 +297,73 @@ UserModel.prototype.getTotalUsersCount = function(callback) {
 };
 
 /*------------------------------------------------------------------------------
+  (public) getIgnoredUsers
+
+  + userID
+  + callback - err or array of user IDs
+  - void
+  
+  Get array of user IDs from Redis which specific user is ignoring.
+------------------------------------------------------------------------------*/    
+UserModel.prototype.getIgnoredUsers = function(userID, callback) {
+    this._redisClient.sismembers("user:" + userID + ":ignored_users", function(err, res) {
+        if(err) {
+            callback(err, undefined);
+        } else {
+            callback(undefined, res);
+        }
+    });
+};
+
+/*------------------------------------------------------------------------------
+  (public) setIgnoredUser
+
+  + userID
+  + ignoredUserID
+  + callback - err or native response
+  - void
+  
+  Set specific room to user set of rooms where he is currently in.
+------------------------------------------------------------------------------*/    
+UserModel.prototype.setIgnoredUser = function(userID, ignoredUserID, callback) {
+    this._redisClient.sadd(
+        "user:" + userID + ":ignored_users",
+        "user:" + ignoredUserID,
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
+};
+
+/*------------------------------------------------------------------------------
+  (public) unsetIgnoredUser
+
+  + userID
+  + ignoredUserID
+  + callback - err or native response
+  - void
+  
+  Removes specific room from a set of user rooms where he is currently in.
+------------------------------------------------------------------------------*/    
+UserModel.prototype.unsetIgnoredUser = function(userID, ignoredUserID, callback) {
+    this._redisClient.srem(
+        "user:" + userID + ":ignored_users",
+        "user:" + ignoredUserID,
+        function(err, res) {
+            if(err) {
+                callback(err, undefined);
+            } else {
+                callback(undefined, res);
+            }
+        }
+    );
+};
+
+/*------------------------------------------------------------------------------
   (public) getRoomsCurrentlyIn
 
   + userID
